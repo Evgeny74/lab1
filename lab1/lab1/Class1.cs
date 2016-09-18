@@ -13,7 +13,7 @@ namespace lab1
     /// Реализация коллекции на основе класса List
     /// </summary>
     /// <typeparam name="T">Тип параметра</typeparam>
-    class MyCollection<T> : ICollection<T>, ICloneable, IEnumerator<T>
+    class MyCollection<T> : ICollection<T>, ICloneable, IEnumerator<T>// where T : Automobile
     {
         /// <summary>
         /// Основной список коллекции
@@ -176,6 +176,42 @@ namespace lab1
         public void Dispose()
         {
             throw new NotImplementedException();
+        }
+        /// <summary>
+        /// Делегат для сортировки элементов
+        /// </summary>
+        /// <param name="comparison">Метод сравнения 2 объектов</param>
+        private delegate void sorting(Comparison<T> comparison);
+        /// <summary>
+        /// Сравнение 2 объектов
+        /// </summary>
+        /// <param name="res">Делегат: метод сравнения 2 объектов</param>
+        /// <param name="x">1-ый объект</param>
+        /// <param name="y">2-ой объект</param>
+        /// <returns></returns>
+        public int Compare(Func<T, T, int> res, T x, T y)
+        {
+            return res(x,y);
+        }
+        /// <summary>
+        /// Функция сортировки коллекции
+        /// </summary>
+        /// <param name="res">Делегат: метод сравнения 2 объектов</param>
+        public void Sort(Func<T,T,int> res)
+        {
+            //list.Sort(delegate(T x, T y) { return x.SizeOfFuelTank.CompareTo(y.SizeOfFuelTank); });
+            sorting  S = new sorting(list.Sort);
+            //list.Sort(delegate (T x, T y) { return res(x, y); });
+            S(delegate (T x, T y) { return res(x, y); });
+        }
+        /// <summary>
+        /// Метод вывода всей коллекции
+        /// </summary>
+        /// <param name="disp">Метод вывода отдельного элемента колекции</param>
+        public void DisplayCollection(Action<T> disp)
+        {
+            foreach (T car in list)
+                disp(car);
         }
     }
 }

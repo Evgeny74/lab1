@@ -148,6 +148,26 @@ namespace lab1
             nameOfCar = carsName;
         }
         /// <summary>
+        /// Метод вывода автомобиля на экран
+        /// </summary>
+        /// <param name="car">Автомобиль</param>
+        public static void displaying(ICar car)
+        {
+            Console.WriteLine(car.Name);
+        }
+        /// <summary>
+        /// Метод сравнения 2 автомобилей по размеру их топливных баков
+        /// </summary>
+        /// <param name="car1">1-ый автомобиль</param>
+        /// <param name="car2">2-ой автомобиль</param>
+        /// <returns>Возвращает 1, если 2-ой объект больше первого (т. е. если топливный бак второго автомобиля больше топливного бака первого),
+        /// 0, если они равны и -1, если первый больше второго</returns>
+        public static int CarsFuelTank(ICar car1, ICar car2)
+        {
+
+            return car1.SizeOfFuelTank.CompareTo(car2.SizeOfFuelTank);
+        }
+        /// <summary>
         /// Метод движения автомобиля
         /// </summary>
         public void move()
@@ -351,6 +371,10 @@ namespace lab1
     /// </summary>
     class FillingStation : IFillingStation<Car>
     {
+        /// <summary>
+        /// Набор автомобилей на заправке
+        /// </summary>
+        MyCollection<Car> Cars;
         /// <summary>
         /// 98-ой бензин
         /// </summary>
@@ -575,7 +599,19 @@ namespace lab1
             
             ILorry<Trailer> lorry = new Lorry<Trailer>(50, "Name");
             ILorry<BigTrailer> ffkfk = lorry;
-            
+            MyCollection<Car> col = new MyCollection<Car>();
+            col.Add(new Car(200,"car1"));
+            col.Add(new Car(190, "car2"));
+            col.Add(new Car(180, "car3"));
+            col.Add(new Car(170, "car4"));
+            col.Add(new Car(140, "car5"));
+            col.Sort(Car.CarsFuelTank);
+            foreach (Car i in col)
+            {
+                Console.WriteLine(i.Name);
+            }
+            Console.WriteLine(col.Compare(Car.CarsFuelTank,col[0],col[1]));
+            col.DisplayCollection(Car.displaying);
             Console.Read();
         }
     }
