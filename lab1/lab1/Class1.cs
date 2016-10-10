@@ -13,7 +13,7 @@ namespace lab1
     /// Реализация коллекции на основе класса List
     /// </summary>
     /// <typeparam name="T">Тип параметра</typeparam>
-    class MyCollection<T> : ICollection<T>, ICloneable, IEnumerator<T>// where T : Automobile
+    class MyCollection<T> : ICollection<T>, ICloneable, IEnumerator<T>
     {
         /// <summary>
         /// Основной список коллекции
@@ -49,13 +49,19 @@ namespace lab1
         public T this[int index]
         {
             get { return list[index]; }
-            set { list.Insert(index, value); }
+            set { list.RemoveAt(index); list.Insert(index, value); }
         }
+        /// <summary>
+        /// Делегат функции сортировки
+        /// </summary>
+        public sorting S;
         /// <summary>
         /// Конструктор коллекции
         /// </summary>
-        public MyCollection()
+        /// <param name="s">Метод сортировки коллекции</param>
+        public MyCollection(sorting s)
         {
+            S = s;
             list = new List<T>();
         }
         /// <summary>
@@ -104,10 +110,10 @@ namespace lab1
         /// Возвращает енумератор
         /// </summary>
         /// <returns>Са енумератор</returns>
-        public IEnumerator<T> GetEnumerator()
-        {
-            return list.GetEnumerator();
-        }
+       // public IEnumerator<T> GetEnumerator()
+      //  {
+       //     return list.GetEnumerator();
+       // }
         /// <summary>
         /// Возвращает енумератор
         /// </summary>
@@ -122,7 +128,7 @@ namespace lab1
         /// <returns>Клон коллекции</returns>
         public object Clone()
         {
-            MyCollection<T> newCol = new MyCollection<T>();
+            MyCollection<T> newCol = new MyCollection<T>(S);
             for (int i = 0; i < list.Count; i++)
                 newCol.list.Add(list[i]);
             return newCol;
@@ -181,7 +187,8 @@ namespace lab1
         /// Делегат для сортировки элементов
         /// </summary>
         /// <param name="comparison">Метод сравнения 2 объектов</param>
-        private delegate void sorting(Comparison<T> comparison);
+        /// 
+        public delegate void sorting(MyCollection<T> collection, bool ascend);
         /// <summary>
         /// Сравнение 2 объектов
         /// </summary>
@@ -196,13 +203,9 @@ namespace lab1
         /// <summary>
         /// Функция сортировки коллекции
         /// </summary>
-        /// <param name="res">Делегат: метод сравнения 2 объектов</param>
-        public void Sort(Func<T,T,int> res)
+        public void Sort()
         {
-            //list.Sort(delegate(T x, T y) { return x.SizeOfFuelTank.CompareTo(y.SizeOfFuelTank); });
-            sorting  S = new sorting(list.Sort);
-            //list.Sort(delegate (T x, T y) { return res(x, y); });
-            S(delegate (T x, T y) { return res(x, y); });
+            S(this,true);
         }
         /// <summary>
         /// Метод вывода всей коллекции
@@ -212,6 +215,14 @@ namespace lab1
         {
             foreach (T car in list)
                 disp(car);
+        }
+  
+        public IEnumerator<T> GetEnumerator()
+        {
+            for (int i = 0; i < list.Count; i++)
+            {
+                yield return list[i];
+            }
         }
     }
 }

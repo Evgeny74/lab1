@@ -88,6 +88,8 @@ namespace lab1
             get { return moving; }
             set { moving = value; }
         }
+
+        
         /// <summary>
         /// Топливо автомобиля
         /// </summary>
@@ -135,6 +137,8 @@ namespace lab1
         {
             get { return sizeOfFuelTank; }
         }
+
+        
         /// <summary>
         /// Конструктор класса Automobile. Принимает на вход параметры: sizeOfFuelTank и carsName
         /// </summary>
@@ -168,14 +172,23 @@ namespace lab1
             return car1.SizeOfFuelTank.CompareTo(car2.SizeOfFuelTank);
         }
         /// <summary>
+        /// Событие движения автомобиля
+        /// </summary>
+        public EventHandler<AutomobileEventArgs> OnMove = (sender, value) => { };
+
+        /// <summary>
         /// Метод движения автомобиля
         /// </summary>
         public void move()
         {
             Console.WriteLine("I am moving!");
             fuelOfThisCar.FuelLeft = fuelOfThisCar.FuelLeft - 5;
-
+            OnMove(this, new AutomobileEventArgs() { info = "OnMove"});
         }
+        /// <summary>
+        /// Событие остановки автомобиля
+        /// </summary>
+        public EventHandler<AutomobileEventArgs> OnStop = (sender, value) => { };
         /// <summary>
         /// Метод остановки автомобиля
         /// </summary>
@@ -185,8 +198,14 @@ namespace lab1
             {
                 Console.WriteLine("I stopped.");
                 moving = false;
+                OnStop(this,new AutomobileEventArgs() { info = "OnStop"  });
             }
         }
+        /// <summary>
+        /// Событие обгона другого автомобиля
+        /// </summary>
+        public EventHandler<AutomobileEventArgs> OnOvertake = (sender, value) => { };
+
         /// <summary>
         /// Метод обгона другого автомобиля. На вход подается параметр auto
         /// </summary>
@@ -194,14 +213,26 @@ namespace lab1
         public void overtake(ICar auto)
         {
             Console.WriteLine("I overtook " + auto.Name);
+            OnOvertake(this, new AutomobileEventArgs() { info = "OnOvertake"});
         }
+        /// <summary>
+        /// Событие открытия дверей
+        /// </summary>
+        public EventHandler<AutomobileEventArgs> OnOpenDoors = (sender, value) => { };
+
         /// <summary>
         /// Метод открытия дверей
         /// </summary>
         public void OpenDoors()
         {
             Console.WriteLine("I opened my doors!");
+            OnOpenDoors(this, new AutomobileEventArgs() { info = "OnOpenDoors" });
         }
+        /// <summary>
+        /// Событие заправки автомобиля
+        /// </summary>
+        public EventHandler<AutomobileEventArgs> OnRefuel = (sender, value) => { };
+
         /// <summary>
         /// Метод заправки автомобилей
         /// </summary>
@@ -209,6 +240,7 @@ namespace lab1
         {
             stop();
             FuelOfThisCar.FuelLeft = sizeOfFuelTank;
+            OnRefuel(this, new AutomobileEventArgs() { info = "OnRefuel" });
         }
     }
     /// <summary>
@@ -227,13 +259,19 @@ namespace lab1
             FuelOfThisCar.FuelLeft = sizeOfFuelTank;
         }
         /// <summary>
+        /// Событие открытия багажника легкового автомобиля
+        /// </summary>
+        public EventHandler<AutomobileEventArgs> OnOpenBoot = (sender, value) => { };
+
+        /// <summary>
         /// Метод открытия багажника
         /// </summary>
         void OpenBoot()
         {
-            //Метод открытия багажника
             Console.WriteLine("My boot is open.");
+            OnOpenBoot(this, new AutomobileEventArgs() { info = "OnOpenBoot" });
         }
+        
     }
     /// <summary>
     /// Класс внедорожника
@@ -247,6 +285,7 @@ namespace lab1
         /// <param name="carsName">Имя или название автомобиля</param>
         public OffRoader(ushort sizeOfFuelTank, string carsName) : base(sizeOfFuelTank, carsName)
         { }
+        //public EventHandler<AutomobileEventArgs> OnMove = (sender, value) => { };
         /// <summary>
         /// Метод движения внедорожника
         /// </summary>
@@ -255,6 +294,7 @@ namespace lab1
             Console.WriteLine("I am going off road");
             base.move();
             FuelOfThisCar.FuelLeft -= 5;
+            OnMove(this, new AutomobileEventArgs() { info = "OnMove" });
         }
     }
     /// <summary>
@@ -270,12 +310,13 @@ namespace lab1
         public SportsCar(ushort sizeOfFuelTank, string carsName) : base(sizeOfFuelTank,  carsName)
         { }
         /// <summary>
-        /// Метод движения внедорожника
+        /// Метод движения спортивного автомобиля
         /// </summary>
         public void move()
         {
             Console.WriteLine("I am going fast");
             FuelOfThisCar.FuelLeft -= 5;
+            OnMove(this, new AutomobileEventArgs() { info = "OnMove" }); 
         }
     }
     /// <summary>
@@ -294,19 +335,29 @@ namespace lab1
             FuelOfThisCar.FuelLeft = sizeOfFuelTank;
         }
         /// <summary>
+        /// Событие загрузки грузовика
+        /// </summary>
+        public EventHandler<AutomobileEventArgs> OnBeLoaded = (sender, value) => { };
+
+        /// <summary>
         /// Метод загрузки грузовика
         /// </summary>
-        public void beLoaded()
+        public void BeLoaded()
         {
-            
             Console.WriteLine("I am loaded.");
+            OnBeLoaded(this, new AutomobileEventArgs() { info = "OnBeLoaded" });
         }
+        /// <summary>
+        /// Событие разгрузки грузовика
+        /// </summary>
+        public EventHandler<AutomobileEventArgs> OnUnload = (sender, value) => { };
+
         /// <summary>
         /// Метод разгрузки грузовика
         /// </summary>
-        public void unload()
+        public void Unload()
         {
-            
+            OnUnload(this,new AutomobileEventArgs() { info = "OnUnload" });
             Console.WriteLine("I am unloaded.");
         }
     }
@@ -338,13 +389,18 @@ namespace lab1
             FuelOfThisCar.FuelLeft = sizeOfFuelTank;
         }
         /// <summary>
+        /// Событие прикрепления трейлера
+        /// </summary>
+        public EventHandler<AutomobileEventArgs> OnAttachTrailer = (sender, value) => { };
+
+        /// <summary>
         /// Метод прикрепления прицепа. На вход подается параметр trailer
         /// </summary>
         /// <param name="trailer">Прикрепляемый прицеп</param>
         public void AttachATrailer(T trailer)
         {
-            //Метод прицепления прицепа
-            trailer.beAttached();
+            OnAttachTrailer(this,new AutomobileEventArgs() { info = "OnAttachTrailer" });
+            trailer.BeAttached();
             Console.WriteLine("I have a trailer attached");
         }
 
@@ -394,12 +450,17 @@ namespace lab1
             p98 = new Petrol_98(petrol98);
         }
         /// <summary>
-        /// Методзаправки автомобиля. На вход подается параметр car
+        /// Событие заправки автомобиля
+        /// </summary>
+        public EventHandler<AutomobileEventArgs> OnFillTheCar = (sender, value) => { };
+
+        /// <summary>
+        /// Метод заправки автомобиля. На вход подается параметр car
         /// </summary>
         /// <param name="car">Автомобиль, который нужно заправить</param>
         public void fillTheCar(ICar car)
         {
-            //Метод для заправки автомобиля
+            OnFillTheCar(this,new AutomobileEventArgs() { info = "OnFillTheCar" });
             uint amount = car.SizeOfFuelTank - car.FuelOfThisCar.FuelLeft;
             if (car.TypeOfFuel == 95)
             {
@@ -414,11 +475,17 @@ namespace lab1
             Console.WriteLine("I filled the " + car.Name);
         }
         /// <summary>
+        /// Событие одалживания автомобиля
+        /// </summary>
+        public EventHandler<AutomobileEventArgs> OnRemoveTheCar = (sender, value) => { };
+
+        /// <summary>
         /// Одолжить машину
         /// </summary>
         /// <returns></returns>
         public Car RemoveCar()
         {
+            OnRemoveTheCar(this, new AutomobileEventArgs() { info = "OnRemoveTheCar" });
             return new Car(50,"Hired car");
         }
     }
@@ -438,7 +505,7 @@ namespace lab1
         /// <summary>
         /// Метод прицепления прицепа к фуре 
         /// </summary>
-        void beAttached();
+        void BeAttached();
     }
     /// <summary>
     /// Класс трейлера
@@ -462,10 +529,16 @@ namespace lab1
         /// </summary>
         public Trailer() { isAttached = false; }
         /// <summary>
+        /// Событие прикрепления прицепа к фуре
+        /// </summary>
+        public EventHandler<AutomobileEventArgs> OnBeAttached = (sender, value) => { };
+
+        /// <summary>
         /// Метод прицепления прицепа к фуре 
         /// </summary>
-        public void beAttached()
+        public void BeAttached()
         {
+            OnBeAttached(this,new AutomobileEventArgs() { info = "OnBeAttached"});
             isAttached = true;
             Console.WriteLine("I am attached to a lorry");
         }
@@ -581,37 +654,34 @@ namespace lab1
     {
         static void Main(string[] args)
         {
-            SportsCar car = new SportsCar(50,"FastCar");
+            Logger logg = new Logger("games \\log.log");
+            SportsCar car = new SportsCar(40,"FastCar");
+            //Automobile aut = new Automobile(50,"Auto");
+            logg.SubscribeOnEventsAuto(car);
+            logg.OnLog += Helper.WriteLog;
+            car.move();
+            car.move();
             Car slowCar = new Car(50,"SlowCar");
-            MyCollection<Car> x = new MyCollection<Car>();
-            x.Add(car);
-            x.Add(slowCar);
-            MyCollection<Car> y = (MyCollection<Car>) x.Clone();
-            //x.Remove(slowCar);
-            //Console.WriteLine(x[1].Name);
-            //foreach (Car i in y)
-            //{
-            //    Console.WriteLine(i);
-            // }
-            //Console.WriteLine(y[1].Name);
             IFillingStation < Car > Fill = new FillingStation(200,200);
             Fill.fillTheCar(car);
-            
-            ILorry<Trailer> lorry = new Lorry<Trailer>(50, "Name");
-            ILorry<BigTrailer> ffkfk = lorry;
-            MyCollection<Car> col = new MyCollection<Car>();
+            MyCollection<Car> col = new MyCollection<Car>(Helper.sort);
             col.Add(new Car(200,"car1"));
             col.Add(new Car(190, "car2"));
             col.Add(new Car(180, "car3"));
             col.Add(new Car(170, "car4"));
             col.Add(new Car(140, "car5"));
-            col.Sort(Car.CarsFuelTank);
             foreach (Car i in col)
             {
                 Console.WriteLine(i.Name);
             }
-            Console.WriteLine(col.Compare(Car.CarsFuelTank,col[0],col[1]));
-            col.DisplayCollection(Car.displaying);
+            Console.WriteLine("///////////////////");
+            col.Sort();
+            foreach (Car i in col)
+            {
+                Console.WriteLine(i.Name);
+            }
+            
+            
             Console.Read();
         }
     }
