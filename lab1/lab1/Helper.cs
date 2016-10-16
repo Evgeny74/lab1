@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,48 +9,52 @@ namespace lab1
 {
     class Helper
     {
+        /// <summary>
+        /// Метод вывода логов
+        /// </summary>
+        /// <param name="obj">Объект-отправитель</param>
+        /// <param name="args">Список аргументов</param>
         public static void WriteLog(Object obj,LogArgs args)
         {
             String msg = "";
             switch (args.info)
             {
-                case "OnMove":
+                case Info.OnMove:
                     var car = (Automobile) obj;
                     msg = "Moving. Amount of fuel: " + car.FuelOfThisCar.FuelLeft;
                     break;
-                case "OnStop":
+                case Info.OnStop:
                     msg = "Stopped";
                     break;
-                case "OnOvertake":
+                case Info.OnOvertake:
                     msg = "Overtook";
                     break;
-                case "OnOpenDoors":
+                case Info.OnOpenDoors:
                     msg = "Opened doors";
                     break;
-                case "OnRefuel":
+                case Info.OnRefuel:
                     var auto = (Automobile) obj;
                     msg = "Refuelled. Amount of fuel: " + auto.FuelOfThisCar.FuelLeft;
                     break;
-                case "OnOpenBoot":
+                case Info.OnOpenBoot:
                     msg = "Opened boot";
                     break;
-                case "OnBeLoaded":
+                case Info.OnBeLoaded:
                     msg = "Was loaded";
                     break;
-                case "OnUnload":
+                case Info.OnUnload:
                     msg = "Was unloaded";
                     break;
-                case "OnAttachTrailer":
+                case Info.OnAttachTrailer:
                     msg = "Trailer" + "was attached";
                     break;
-                case "OnFillTheCar":
-                    var fill = (FillingStation) obj;
+                case Info.OnFillTheCar:
                     msg = "The car was filled.";
                     break;
-                case "OnRemoveTheCar":
+                case Info.OnRemoveTheCar:
                     msg = "Removed the car.";
                     break;
-                case "OnBeAttached":
+                case Info.OnBeAttached:
                     msg = "Attached.";
                     break;
 
@@ -57,6 +62,11 @@ namespace lab1
             args.output.WriteLine($"\"{args.name}\",{DateTime.Now}: {msg}");
             args.output.Flush();
         }
+        /// <summary>
+        /// Метод сортировки коллекции автомобилей
+        /// </summary>
+        /// <param name="collection">Коллекция</param>
+        /// <param name="ascend">Порядок(убывание или возрастание): true, если возрастание, иначе false</param>
         public static void sort(MyCollection<Automobile> collection, bool ascend)
         {
             int count = collection.Count;
@@ -83,9 +93,14 @@ namespace lab1
                 }
             }
         }
-
+        /// <summary>
+        /// Метод сортировки коллекции легковых автомобилей
+        /// </summary>
+        /// <param name="collection">Коллекция</param>
+        /// <param name="ascend">Порядок(убывание или возрастание): true, если возрастание, иначе false</param>
         public static void sort(MyCollection<Car> collection, bool ascend)
         {
+            Console.WriteLine("hello");
             int count = collection.Count;
             for (int i = 1; i < count; i++)
             {
@@ -109,6 +124,42 @@ namespace lab1
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Создание легкового автомобиля из файла конфигурации
+        /// </summary>
+        /// <returns>Созданный легковой автомобиль</returns>
+        /// <exception cref="WrongLength">Выбрасывается в случае недостатка параметров</exception>
+        /// <exception cref="StringFormatException">Выбрасывается в случае,  если строка неверного формата </exception>
+        /// <exception cref="NotEnoughFuelException">Выбрасывается в случае,  если у автомобиля слишком мало топлива</exception>
+        public static Car CarFromConfig()
+        {
+            string line,name;
+            ushort fuel;
+            // System.IO.StreamReader file = new System.IO.StreamReader(@"c:\универ\c#\lab1\CarConfig.txt");
+            var lines = File.ReadAllLines(@"c:\универ\c#\lab1\CarConfig.txt");
+            if (lines.Length < 2)
+                throw new WrongLength("Not enough parameters to create a new car.");
+            line = lines[0];
+            if (line.Length < 6)
+                throw new WrongLength("Too short string: " + line);
+            try
+            {
+                name = line.Substring(5, line.Length - 5);
+            }
+            catch (Exception e)
+            { throw new StringFormatException("String exception.", e); }
+            line = lines[1];
+            if (line.Length < 6)
+                throw new WrongLength("Too short string: " + line);
+            try
+            {
+                fuel = Convert.ToUInt16(line.Substring(5, line.Length - 5));
+            }
+            catch (Exception e)
+            { throw new NotEnoughFuelException("Too little fuel!",e); }
+            return new lab1.Car(fuel,name);
         }
     }
 

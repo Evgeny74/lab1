@@ -45,9 +45,11 @@
   <ItemGroup>
     <Compile Include="AutomobileEventArgs.cs" />
     <Compile Include="Class1.cs" />
+    <Compile Include="ExceptionLogger.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="LogArgs.cs" />
     <Compile Include="Logger.cs" />
+    <Compile Include="MyException.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

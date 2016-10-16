@@ -138,14 +138,17 @@ namespace lab1
             get { return sizeOfFuelTank; }
         }
 
-        
+
         /// <summary>
         /// Конструктор класса Automobile. Принимает на вход параметры: sizeOfFuelTank и carsName
         /// </summary>
         /// <param name="sizeOfFuelTank">Размер топливного бака</param>
         /// <param name="carsName">Имя или название автомобиля</param>
+        /// <exception cref="NotEnoughFuelException">Выбрасывается в случае неверного (отрицательного размера (или 0) топливного бака)</exception>
         public Automobile(ushort sizeOfFuelTank,string  carsName)
         {
+            if (sizeOfFuelTank < 1)
+                throw new NotEnoughFuelException("Size of fuel tank cant be less than 1.");
             moving = false;
             
             this.sizeOfFuelTank = sizeOfFuelTank;
@@ -179,11 +182,14 @@ namespace lab1
         /// <summary>
         /// Метод движения автомобиля
         /// </summary>
+        /// <exception cref="NotEnoughFuelException">Выбрасывается в случае недостатка топлива</exception>
         public void move()
         {
+            if (fuelOfThisCar.FuelLeft < 5)
+                throw new NotEnoughFuelException("Automobile \"" + Name + "\" does not have enough fuel. Remaining fuel: " + fuelOfThisCar.FuelLeft);
             Console.WriteLine("I am moving!");
             fuelOfThisCar.FuelLeft = fuelOfThisCar.FuelLeft - 5;
-            OnMove(this, new AutomobileEventArgs() { info = "OnMove"});
+            OnMove(this, new AutomobileEventArgs() { info = Info.OnMove});
         }
         /// <summary>
         /// Событие остановки автомобиля
@@ -198,7 +204,7 @@ namespace lab1
             {
                 Console.WriteLine("I stopped.");
                 moving = false;
-                OnStop(this,new AutomobileEventArgs() { info = "OnStop"  });
+                OnStop(this,new AutomobileEventArgs() { info = Info.OnStop  });
             }
         }
         /// <summary>
@@ -213,7 +219,7 @@ namespace lab1
         public void overtake(ICar auto)
         {
             Console.WriteLine("I overtook " + auto.Name);
-            OnOvertake(this, new AutomobileEventArgs() { info = "OnOvertake"});
+            OnOvertake(this, new AutomobileEventArgs() { info = Info.OnOvertake});
         }
         /// <summary>
         /// Событие открытия дверей
@@ -226,7 +232,7 @@ namespace lab1
         public void OpenDoors()
         {
             Console.WriteLine("I opened my doors!");
-            OnOpenDoors(this, new AutomobileEventArgs() { info = "OnOpenDoors" });
+            OnOpenDoors(this, new AutomobileEventArgs() { info = Info.OnOpenDoors });
         }
         /// <summary>
         /// Событие заправки автомобиля
@@ -240,7 +246,7 @@ namespace lab1
         {
             stop();
             FuelOfThisCar.FuelLeft = sizeOfFuelTank;
-            OnRefuel(this, new AutomobileEventArgs() { info = "OnRefuel" });
+            OnRefuel(this, new AutomobileEventArgs() { info = Info.OnRefuel });
         }
     }
     /// <summary>
@@ -269,7 +275,7 @@ namespace lab1
         void OpenBoot()
         {
             Console.WriteLine("My boot is open.");
-            OnOpenBoot(this, new AutomobileEventArgs() { info = "OnOpenBoot" });
+            OnOpenBoot(this, new AutomobileEventArgs() { info = Info.OnOpenBoot });
         }
         
     }
@@ -289,12 +295,15 @@ namespace lab1
         /// <summary>
         /// Метод движения внедорожника
         /// </summary>
+        /// <exception cref="NotEnoughFuelException">Выбрасывается в случае недостатка топлива</exception>
         public void move()
         {
+            if (FuelOfThisCar.FuelLeft < 5)
+                throw new NotEnoughFuelException("Automobile \"" + Name + "\" does not have enough fuel. Remaining fuel: " + FuelOfThisCar.FuelLeft);
             Console.WriteLine("I am going off road");
             base.move();
             FuelOfThisCar.FuelLeft -= 5;
-            OnMove(this, new AutomobileEventArgs() { info = "OnMove" });
+            OnMove(this, new AutomobileEventArgs() { info = Info.OnMove });
         }
     }
     /// <summary>
@@ -312,11 +321,14 @@ namespace lab1
         /// <summary>
         /// Метод движения спортивного автомобиля
         /// </summary>
+        /// <exception cref="NotEnoughFuelException">Выбрасывается в случае недостатка топлива</exception>
         public void move()
         {
+            if (FuelOfThisCar.FuelLeft < 5)
+                throw new NotEnoughFuelException("Automobile \"" + Name + "\" does not have enough fuel. Remaining fuel: " + FuelOfThisCar.FuelLeft);
             Console.WriteLine("I am going fast");
             FuelOfThisCar.FuelLeft -= 5;
-            OnMove(this, new AutomobileEventArgs() { info = "OnMove" }); 
+            OnMove(this, new AutomobileEventArgs() { info = Info.OnMove }); 
         }
     }
     /// <summary>
@@ -345,7 +357,7 @@ namespace lab1
         public void BeLoaded()
         {
             Console.WriteLine("I am loaded.");
-            OnBeLoaded(this, new AutomobileEventArgs() { info = "OnBeLoaded" });
+            OnBeLoaded(this, new AutomobileEventArgs() { info = Info.OnBeLoaded });
         }
         /// <summary>
         /// Событие разгрузки грузовика
@@ -357,7 +369,7 @@ namespace lab1
         /// </summary>
         public void Unload()
         {
-            OnUnload(this,new AutomobileEventArgs() { info = "OnUnload" });
+            OnUnload(this,new AutomobileEventArgs() { info = Info.OnUnload });
             Console.WriteLine("I am unloaded.");
         }
     }
@@ -399,7 +411,7 @@ namespace lab1
         /// <param name="trailer">Прикрепляемый прицеп</param>
         public void AttachATrailer(T trailer)
         {
-            OnAttachTrailer(this,new AutomobileEventArgs() { info = "OnAttachTrailer" });
+            OnAttachTrailer(this,new AutomobileEventArgs() { info = Info.OnAttachTrailer });
             trailer.BeAttached();
             Console.WriteLine("I have a trailer attached");
         }
@@ -458,17 +470,22 @@ namespace lab1
         /// Метод заправки автомобиля. На вход подается параметр car
         /// </summary>
         /// <param name="car">Автомобиль, который нужно заправить</param>
+        /// <exception cref="NotEnoughFuelException">Выбрасывается в случае неверного значения топлива</exception>
         public void fillTheCar(ICar car)
         {
-            OnFillTheCar(this,new AutomobileEventArgs() { info = "OnFillTheCar" });
+            OnFillTheCar(this,new AutomobileEventArgs() { info = Info.OnFillTheCar });
             uint amount = car.SizeOfFuelTank - car.FuelOfThisCar.FuelLeft;
             if (car.TypeOfFuel == 95)
             {
+                if (p95.FuelLeft < amount)
+                    throw new NegativeValueException("Car \"" + car.Name + "\" cant be filled beacause htere is not enough fuel.");
                 p95.FuelLeft -= amount;
                 car.refuel();
             }
             if (car.TypeOfFuel == 98)
             {
+                if (p98.FuelLeft < amount)
+                    throw new NegativeValueException("Car \"" + car.Name + "\" cant be filled beacause htere is not enough fuel.");
                 p98.FuelLeft -= amount;
                 car.refuel();
             }
@@ -485,7 +502,7 @@ namespace lab1
         /// <returns></returns>
         public Car RemoveCar()
         {
-            OnRemoveTheCar(this, new AutomobileEventArgs() { info = "OnRemoveTheCar" });
+            OnRemoveTheCar(this, new AutomobileEventArgs() { info = Info.OnRemoveTheCar });
             return new Car(50,"Hired car");
         }
     }
@@ -538,7 +555,7 @@ namespace lab1
         /// </summary>
         public void BeAttached()
         {
-            OnBeAttached(this,new AutomobileEventArgs() { info = "OnBeAttached"});
+            OnBeAttached(this,new AutomobileEventArgs() { info = Info.OnBeAttached});
             isAttached = true;
             Console.WriteLine("I am attached to a lorry");
         }
@@ -654,35 +671,57 @@ namespace lab1
     {
         static void Main(string[] args)
         {
-            Logger logg = new Logger("games \\log.log");
-            SportsCar car = new SportsCar(40,"FastCar");
-            //Automobile aut = new Automobile(50,"Auto");
-            logg.SubscribeOnEventsAuto(car);
-            logg.OnLog += Helper.WriteLog;
-            car.move();
-            car.move();
-            Car slowCar = new Car(50,"SlowCar");
-            IFillingStation < Car > Fill = new FillingStation(200,200);
-            Fill.fillTheCar(car);
-            MyCollection<Car> col = new MyCollection<Car>(Helper.sort);
-            col.Add(new Car(200,"car1"));
-            col.Add(new Car(190, "car2"));
-            col.Add(new Car(180, "car3"));
-            col.Add(new Car(170, "car4"));
-            col.Add(new Car(140, "car5"));
-            foreach (Car i in col)
+            ExceptionLogger excLog = new ExceptionLogger("");
+            try
             {
-                Console.WriteLine(i.Name);
+                Logger logg = new Logger("games \\log.log");
+                //SportsCar car = new SportsCar(4,"FastCar");
+                //Automobile aut = new Automobile(50,"Auto");
+
+                logg.OnLog += Helper.WriteLog;
+
+                Car car = Helper.CarFromConfig();
+                logg.SubscribeOnEventsAuto(car);
+
+                // try
+                // {
+                car.move();
+                car.move();
+                // }
+                // catch (NotEnoughFuelException e) { }
+                car.OpenDoors();
+                Car slowCar = new Car(50, "SlowCar");
+                IFillingStation<Car> Fill = new FillingStation(200, 200);
+                logg.SubscribeOnEventsFillingStation((FillingStation)Fill);
+                Fill.fillTheCar(car);
+                MyCollection<Car> col = new MyCollection<Car>(Helper.sort);
+                col.Add(new Car(200, "car1"));
+                col.Add(new Car(190, "car2"));
+                col.Add(new Car(180, "car3"));
+                col.Add(new Car(170, "car4"));
+                col.Add(new Car(140, "car5"));
+                foreach (Car i in col)
+                {
+                    Console.WriteLine(i.Name);
+                }
+                Console.WriteLine("///////////////////");
+                col.Sort();
+                foreach (Car i in col)
+                {
+                    Console.WriteLine(i.Name);
+                }
+
+
+
             }
-            Console.WriteLine("///////////////////");
-            col.Sort();
-            foreach (Car i in col)
+            catch (MyException e)
+            { excLog.HandleCustomException(e); }
+            catch (Exception e)
+            { excLog.HandleSystemException(e); }
+            finally
             {
-                Console.WriteLine(i.Name);
+                Console.Read();
             }
-            
-            
-            Console.Read();
         }
     }
 

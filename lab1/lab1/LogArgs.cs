@@ -12,7 +12,7 @@ namespace lab1
         /// <summary>
         /// Информация о типе события
         /// </summary>
-        public String info;
+        public Info info;
         /// <summary>
         /// Имя отправителя события
         /// </summary>
