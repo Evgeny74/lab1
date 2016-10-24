@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace lab1
 {
@@ -98,10 +94,11 @@ namespace lab1
         /// </summary>
         /// <param name="collection">Коллекция</param>
         /// <param name="ascend">Порядок(убывание или возрастание): true, если возрастание, иначе false</param>
-        public static void sort(MyCollection<Car> collection, bool ascend)
+        public static void sort(MyCollection<Car> collection, bool ascend, Action<double> progress)
         {
             Console.WriteLine("hello");
             int count = collection.Count;
+            progress(0);
             for (int i = 1; i < count; i++)
             {
                 for (int j = 1; j < count - i + 1; j++)
@@ -123,7 +120,9 @@ namespace lab1
                         collection[j - 1] = car;
                     }
                 }
+                progress((double) i / count);
             }
+            progress(1);
         }
 
         /// <summary>
@@ -141,7 +140,7 @@ namespace lab1
             var lines = File.ReadAllLines(@"c:\универ\c#\lab1\CarConfig.txt");
             if (lines.Length < 2)
                 throw new WrongLength("Not enough parameters to create a new car.");
-            line = lines[0];
+            line = lines[0];    
             if (line.Length < 6)
                 throw new WrongLength("Too short string: " + line);
             try
@@ -160,6 +159,11 @@ namespace lab1
             catch (Exception e)
             { throw new NotEnoughFuelException("Too little fuel!",e); }
             return new lab1.Car(fuel,name);
+        }
+
+        public static void Progress(double progress)
+        {
+            Console.WriteLine("Sorting, " + progress * 100 + "% complete.");
         }
     }
 

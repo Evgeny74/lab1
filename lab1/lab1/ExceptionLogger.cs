@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 
 namespace lab1
 {
@@ -21,9 +18,10 @@ namespace lab1
         /// Контсруктор
         /// </summary>
         /// <param name="path">Путь к файлу, куда пишутся логи</param>
+        private Object mutex;
         public ExceptionLogger(String path)
         {
-
+            mutex = new object();
             Path = path;
             if (String.IsNullOrEmpty(path))
             {
@@ -47,8 +45,15 @@ namespace lab1
         /// <param name="e">Пользовательскоеисключение</param>
         public void HandleCustomException(MyException e)
         {
-            Output.WriteLine(DateTime.Now + ": Custom exception occured : " + e.Message);
-            Output.Flush();
+            new Thread(() =>
+            {
+               lock (mutex)
+               {
+                   Output.WriteLine(DateTime.Now + ": Custom exception occured : " + e.Message);
+                   Output.Flush();
+               }
+           })
+            { IsBackground = true }.Start();
         }
         /// <summary>
         /// Обработка системных исключений
@@ -56,8 +61,15 @@ namespace lab1
         /// <param name="e">Системное исключение</param>
         public void HandleSystemException(Exception e)
         {
-            Output.WriteLine(DateTime.Now + ": System exception : " + e.Message);
-            Output.Flush();
+            new Thread(() =>
+            {
+                lock (mutex)
+                {
+                    Output.WriteLine(DateTime.Now + ": System exception : " + e.Message);
+                    Output.Flush();
+                }
+            })
+            { IsBackground = true }.Start();
         }
     }
 }

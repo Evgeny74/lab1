@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using lab1;
-using System.Collections;
+using System.Threading;
 
 namespace lab1
 {
@@ -679,40 +673,41 @@ namespace lab1
                 //Automobile aut = new Automobile(50,"Auto");
 
                 logg.OnLog += Helper.WriteLog;
-
                 Car car = Helper.CarFromConfig();
                 logg.SubscribeOnEventsAuto(car);
-
-                // try
-                // {
                 car.move();
                 car.move();
-                // }
-                // catch (NotEnoughFuelException e) { }
                 car.OpenDoors();
                 Car slowCar = new Car(50, "SlowCar");
                 IFillingStation<Car> Fill = new FillingStation(200, 200);
                 logg.SubscribeOnEventsFillingStation((FillingStation)Fill);
                 Fill.fillTheCar(car);
                 MyCollection<Car> col = new MyCollection<Car>(Helper.sort);
-                col.Add(new Car(200, "car1"));
-                col.Add(new Car(190, "car2"));
-                col.Add(new Car(180, "car3"));
-                col.Add(new Car(170, "car4"));
-                col.Add(new Car(140, "car5"));
-                foreach (Car i in col)
+                //col.Add(new Car(200, "car1"));
+                // col.Add(new Car(190, "car2"));
+                //col.Add(new Car(180, "car3"));
+                // col.Add(new Car(170, "car4"));
+                // col.Add(new Car(140, "car5"));
+                Random rand = new Random();
+                for (int i = 0; i < 1000; i++)
                 {
-                    Console.WriteLine(i.Name);
+                    col.Add(new Car((ushort)rand.Next(50000), "Car" + i));
                 }
+               // foreach (Car i in col)
+               // {
+               //     Console.WriteLine(i.Name);
+               // }
                 Console.WriteLine("///////////////////");
-                col.Sort();
-                foreach (Car i in col)
-                {
-                    Console.WriteLine(i.Name);
-                }
-
-
-
+                
+                sorting(col);
+                //})
+                //{ IsBackground = true }.Start();
+                //foreach (Car i in col)
+                //{
+                //Console.WriteLine(i.Name);
+                // }
+                car.move();
+                car.move();
             }
             catch (MyException e)
             { excLog.HandleCustomException(e); }
@@ -722,6 +717,18 @@ namespace lab1
             {
                 Console.Read();
             }
+        }
+        /// <summary>
+        /// Асинхронная сортировка
+        /// </summary>
+        /// <param name="col">Коллекция, которую надо отсортировать</param>
+        public static async void sorting(MyCollection<Car> col)
+        {
+            new Thread(async () =>
+            {
+                await col.Sort();
+            })
+            { IsBackground = true }.Start();
         }
     }
 

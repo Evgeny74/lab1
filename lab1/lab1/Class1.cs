@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace lab1
@@ -188,7 +184,7 @@ namespace lab1
         /// </summary>
         /// <param name="comparison">Метод сравнения 2 объектов</param>
         /// 
-        public delegate void sorting(MyCollection<T> collection, bool ascend);
+        public delegate  void  sorting(MyCollection<T> collection, bool ascend, Action<double> progress);
         /// <summary>
         /// Сравнение 2 объектов
         /// </summary>
@@ -203,9 +199,9 @@ namespace lab1
         /// <summary>
         /// Функция сортировки коллекции
         /// </summary>
-        public void Sort()
+        public async Task Sort()
         {
-            S(this,true);
+            S(this,true,Helper.Progress);
         }
         /// <summary>
         /// Метод вывода всей коллекции

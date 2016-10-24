@@ -1,2 +1,2 @@
 Name:car1
-Fuel:
+Fuel:2224

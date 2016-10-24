@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 
 namespace lab1
 {
@@ -33,14 +30,19 @@ namespace lab1
         /// </summary>
         protected String Path;
         /// <summary>
-        /// Тип вывода: в консоль или в файл
+        /// Семафор
         /// </summary>
+        private Object mutex;
+        /// <summary>
+        /// Тип вывода: в консоль или в файл
+        /// </summary> 
         protected TextWriter Output;
         /// <summary>
         /// Конструктор. На вход подается путь к файлу вывода логов. Если выводить нужно в консоль - нужно подать пустую строку
         /// </summary>
         /// <param name="path">Путь к файлу</param>
         public Logger(String path) {
+            mutex = new object();
             Path = path;
             if (String.IsNullOrEmpty(path))
             { 
@@ -68,11 +70,52 @@ namespace lab1
         /// <param name="auto">Сам автомобиль</param>
         public void SubscribeOnEventsAuto(Automobile auto)
         {
-            auto.OnMove += (sender, e) => { OnLog(sender, new LogArgs() { info = Info.OnMove,name = auto.Name,output = Output}); };
-            auto.OnStop += (sender, e) => { OnLog(sender, new LogArgs() { info = Info.OnStop, name = auto.Name, output = Output }); };
-            auto.OnOvertake += (sender,e) => { OnLog(sender, new LogArgs() { info = Info.OnOvertake, name = auto.Name, output = Output }); };
-            auto.OnOpenDoors += (sender, e) => { OnLog(sender, new LogArgs() { info = Info.OnOpenDoors, name = auto.Name, output = Output }); };
-            auto.OnRefuel += (sender, e) => { OnLog(sender, new LogArgs() { info = Info.OnRefuel, name = auto.Name, output = Output }); };
+            auto.OnMove += (sender, e) => {
+                new Thread(() =>
+                {
+                    lock (mutex)
+                    {
+                        OnLog(sender, new LogArgs() { info = Info.OnMove,name = auto.Name,output = Output});
+                    }
+                }){ IsBackground = true }.Start();
+            };
+            auto.OnStop += (sender, e) => {
+                new Thread(() =>
+                {
+                    lock (mutex)
+                    {
+                        OnLog(sender, new LogArgs() { info = Info.OnStop, name = auto.Name, output = Output });
+                    }
+                }){ IsBackground = true}.Start();
+            };
+            auto.OnOvertake += (sender,e) => {
+                new Thread(() =>
+                {
+                    lock (mutex)
+                    {
+                        OnLog(sender, new LogArgs() { info = Info.OnOvertake, name = auto.Name, output = Output });
+                    }
+                }){ IsBackground = true}.Start();
+            };
+            auto.OnOpenDoors += (sender, e) => {
+                new Thread(() =>
+                {
+                    lock (mutex)
+                    {
+                        OnLog(sender, new LogArgs() { info = Info.OnOpenDoors, name = auto.Name, output = Output });
+                    }
+                })
+                { IsBackground = true}.Start();
+            };
+            auto.OnRefuel += (sender, e) => {
+                new Thread(() =>
+                {
+                    lock (mutex)
+                    {
+                        OnLog(sender, new LogArgs() { info = Info.OnRefuel, name = auto.Name, output = Output });
+                    }
+                }){ IsBackground = true }.Start();
+            };
         }
         /// <summary>
         /// Подписка на события легкового автомобиля
@@ -80,7 +123,16 @@ namespace lab1
         /// <param name="car">Сам автомобиль</param>
         public void SubscribeOnEventsCar(Car car)
         {
-            car.OnOpenBoot += (sender, e) => { OnLog(sender, new LogArgs() { info = Info.OnOpenBoot, name = car.Name, output = Output }); };
+            car.OnOpenBoot += (sender, e) => {
+            new Thread(() =>
+            {
+                lock (mutex)
+                {
+                    OnLog(sender, new LogArgs() { info = Info.OnOpenBoot, name = car.Name, output = Output });
+                }
+            })
+            { IsBackground = true }.Start();
+            };
         }
         /// <summary>
         /// Подписка на события фуры
@@ -88,7 +140,16 @@ namespace lab1
         /// <param name="lorry">Сама фура</param>
         public void SubscribeOnEventsLorry(Lorry<Trailer> lorry)
         {
-            lorry.OnAttachTrailer += (sender, e) => { OnLog(sender, new LogArgs() { info = Info.OnAttachTrailer, name = lorry.Name, output = Output }); };
+            lorry.OnAttachTrailer += (sender, e) => {
+            new Thread(() =>
+            {
+                lock (mutex)
+                {
+                    OnLog(sender, new LogArgs() { info = Info.OnAttachTrailer, name = lorry.Name, output = Output });
+                }
+            })
+            { IsBackground = true }.Start();
+            };
         }
         /// <summary>
         /// Подписка на события грузовика
@@ -96,8 +157,25 @@ namespace lab1
         /// <param name="tr">Сам грузовик</param>
         public void SubscribeOnEventsTruck(Truck tr)
         {
-            tr.OnBeLoaded+= (sender, e) => { OnLog(sender, new LogArgs() { info = Info.OnBeLoaded, name = tr.Name, output = Output }); };
-            tr.OnUnload += (sender, e) => { OnLog(sender, new LogArgs() { info = Info.OnUnload, name = tr.Name, output = Output }); };
+            tr.OnBeLoaded+= (sender, e) => {
+                new Thread(() =>
+                {
+                    lock (mutex)
+                    {
+                        OnLog(sender, new LogArgs() { info = Info.OnBeLoaded, name = tr.Name, output = Output });
+                    }
+                }) { IsBackground = true}.Start();
+            };
+            tr.OnUnload += (sender, e) => {
+            new Thread(() =>
+            {
+                lock (mutex)
+                {
+                    OnLog(sender, new LogArgs() { info = Info.OnUnload, name = tr.Name, output = Output });
+                }
+            })
+            { IsBackground = true }.Start();
+            };
         }
         /// <summary>
         /// Подписка на события заправочной станции
@@ -105,8 +183,26 @@ namespace lab1
         /// <param name="fill">Сама станция</param>
         public void SubscribeOnEventsFillingStation(FillingStation fill)
         {
-            fill.OnRemoveTheCar += (sender, e) => { OnLog(sender, new LogArgs() { info = Info.OnRemoveTheCar, name = "Filling station", output = Output }); };
-            fill.OnFillTheCar += (sender, e) => { OnLog(sender, new LogArgs() { info = Info.OnFillTheCar, name = "Filling station", output = Output }); };
+            fill.OnRemoveTheCar += (sender, e) => {
+                new Thread(() =>
+                {
+                    lock (mutex)
+                    {
+                        OnLog(sender, new LogArgs() { info = Info.OnRemoveTheCar, name = "Filling station", output = Output });
+                    }
+                })
+                { IsBackground = true }.Start();
+            };
+            fill.OnFillTheCar += (sender, e) => {
+                new Thread(() =>
+                {
+                    lock (mutex)
+                    {
+                        OnLog(sender, new LogArgs() { info = Info.OnFillTheCar, name = "Filling station", output = Output });
+                    }
+                })
+                { IsBackground = true }.Start();
+            };
         }
         /// <summary>
         /// Подписка на события трейлера 
@@ -114,7 +210,16 @@ namespace lab1
         /// <param name="tr">Сам трейлер</param>
         public void SubscribeOnEventsTrailer(Trailer tr)
         {
-            tr.OnBeAttached += (sender, e) => { OnLog(sender, new LogArgs() { info = Info.OnBeAttached, name = "Trailer", output = Output }); };
+            tr.OnBeAttached += (sender, e) => {
+                new Thread(() =>
+                {
+                    lock (mutex)
+                    {
+                        OnLog(sender, new LogArgs() { info = Info.OnBeAttached, name = "Trailer", output = Output });
+                    }
+                })
+                { IsBackground = true }.Start();
+            };
         }
     }
 
