@@ -3,7 +3,7 @@ using System.IO;
 
 namespace lab1
 {
-    class LogArgs : EventArgs
+    public class LogArgs : EventArgs
     {
         /// <summary>
         /// Информация о типе события

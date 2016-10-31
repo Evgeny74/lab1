@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using System.Xml.Serialization;
 
 namespace lab1
 {
@@ -9,11 +11,13 @@ namespace lab1
     /// Реализация коллекции на основе класса List
     /// </summary>
     /// <typeparam name="T">Тип параметра</typeparam>
-    class MyCollection<T> : ICollection<T>, ICloneable, IEnumerator<T>
+    [Serializable]
+    public class MyCollection<T> : ICollection<T>, ICloneable, IEnumerator<T>
     {
         /// <summary>
         /// Основной список коллекции
         /// </summary>
+        
         private List<T> list;
         /// <summary>
         /// Количество элементов в коллекции
@@ -58,6 +62,21 @@ namespace lab1
         public MyCollection(sorting s)
         {
             S = s;
+            list = new List<T>();
+        }
+        /// <summary>
+        /// Конструктор из List
+        /// </summary>
+        /// <param name="list"></param>
+        public MyCollection(List<T> list)
+        {
+            this.list = list;
+        }
+        /// <summary>
+        /// Конструктор коллекции
+        /// </summary>
+        public MyCollection()
+        {
             list = new List<T>();
         }
         /// <summary>
@@ -201,7 +220,8 @@ namespace lab1
         /// </summary>
         public async Task Sort()
         {
-            S(this,true,Helper.Progress);
+            var t = Task.Run(() => S(this, true, Helper.Progress) );
+            
         }
         /// <summary>
         /// Метод вывода всей коллекции

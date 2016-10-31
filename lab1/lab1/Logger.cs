@@ -4,7 +4,7 @@ using System.Threading;
 
 namespace lab1
 {
-    enum Info
+    public enum Info
         {
         OnMove,
         OnStop,

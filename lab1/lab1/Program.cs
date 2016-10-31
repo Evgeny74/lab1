@@ -1,5 +1,8 @@
-﻿using System;
-using System.Threading;
+﻿using lab1.Serialization;
+using System;
+using System.Runtime.Serialization.Formatters.Binary;
+using Newtonsoft.Json;
+using System.Xml.Serialization;
 
 namespace lab1
 {
@@ -26,13 +29,7 @@ namespace lab1
             set;
             get;
         }
-        /// <summary>
-        /// Поле, показывающее тип используемого бензина
-        /// </summary>
-        ushort TypeOfFuel
-        {
-            get;
-        }
+        
         /// <summary>
         /// Поле арзмера топливного бака
         /// </summary>
@@ -67,7 +64,8 @@ namespace lab1
     /// <summary>
     /// Абстрактный класс автомобиль 
     /// </summary>
-    abstract class Automobile : ICar
+    [Serializable]
+    public abstract class Automobile : ICar
     {
         /// <summary>
         /// Поле, показывающее, двигается автомобиль или нет. True, если автомобиль движется, иначе false
@@ -82,29 +80,6 @@ namespace lab1
             get { return moving; }
             set { moving = value; }
         }
-
-        
-        /// <summary>
-        /// Топливо автомобиля
-        /// </summary>
-        private Fuel fuelOfThisCar;
-        /// <summary>
-        /// Топливо автомобиля
-        /// </summary>
-        public Fuel FuelOfThisCar
-        {
-            get { return fuelOfThisCar; }
-            set { fuelOfThisCar = value; }
-        }
-        /// <summary>
-        /// Поле, показывающее тип используемого бензина
-        /// </summary>
-        private ushort typeOfFuel;
-        /// <summary>
-        /// Поле, показывающее тип используемого бензина
-        /// </summary>
-        public ushort TypeOfFuel
-        { get { return typeOfFuel; } }
         /// <summary>
         /// Поле имени автомобиля
         /// </summary>
@@ -114,7 +89,7 @@ namespace lab1
         /// </summary>
         public string Name
         {
-            
+            set { nameOfCar = value; }
             get
             {
                 return nameOfCar;
@@ -129,23 +104,45 @@ namespace lab1
         /// </summary>
         public uint SizeOfFuelTank
         {
+            set { sizeOfFuelTank = value; }
             get { return sizeOfFuelTank; }
         }
 
-
+        /// <summary>
+        /// Топливо автомобиля
+        /// </summary>
+        private Fuel fuelOfThisCar;
+        /// <summary>
+        /// Топливо автомобиля
+        /// </summary>
+        [XmlIgnore]
+        public Fuel FuelOfThisCar
+        {
+            get { return fuelOfThisCar; }
+            set { fuelOfThisCar = value; }
+        }
+        
+        /// <summary>
+        /// Конструктор по-умолчанию
+        /// </summary>
+        public Automobile()
+        { }
         /// <summary>
         /// Конструктор класса Automobile. Принимает на вход параметры: sizeOfFuelTank и carsName
         /// </summary>
         /// <param name="sizeOfFuelTank">Размер топливного бака</param>
         /// <param name="carsName">Имя или название автомобиля</param>
+        /// <param name="Moving">Движется или нет</param>
+        /// <param name="FuelOfThisCar">Топливо</param>
         /// <exception cref="NotEnoughFuelException">Выбрасывается в случае неверного (отрицательного размера (или 0) топливного бака)</exception>
-        public Automobile(ushort sizeOfFuelTank,string  carsName)
+        public Automobile(ushort sizeOfFuelTank,string  carsName, bool Moving,Fuel FuelOfThisCar)
         {
             if (sizeOfFuelTank < 1)
                 throw new NotEnoughFuelException("Size of fuel tank cant be less than 1.");
-            moving = false;
+            moving = Moving;
             
             this.sizeOfFuelTank = sizeOfFuelTank;
+            this.FuelOfThisCar = FuelOfThisCar;
             nameOfCar = carsName;
         }
         /// <summary>
@@ -171,6 +168,9 @@ namespace lab1
         /// <summary>
         /// Событие движения автомобиля
         /// </summary>
+        [JsonIgnore]
+        [XmlIgnore]
+        [SoapIgnore]
         public EventHandler<AutomobileEventArgs> OnMove = (sender, value) => { };
 
         /// <summary>
@@ -188,6 +188,9 @@ namespace lab1
         /// <summary>
         /// Событие остановки автомобиля
         /// </summary>
+        [JsonIgnore]
+        [XmlIgnore]
+        [SoapIgnore]
         public EventHandler<AutomobileEventArgs> OnStop = (sender, value) => { };
         /// <summary>
         /// Метод остановки автомобиля
@@ -204,6 +207,9 @@ namespace lab1
         /// <summary>
         /// Событие обгона другого автомобиля
         /// </summary>
+        [JsonIgnore]
+        [XmlIgnore]
+        [SoapIgnore]
         public EventHandler<AutomobileEventArgs> OnOvertake = (sender, value) => { };
 
         /// <summary>
@@ -218,6 +224,9 @@ namespace lab1
         /// <summary>
         /// Событие открытия дверей
         /// </summary>
+        [JsonIgnore]
+        [XmlIgnore]
+        [SoapIgnore]
         public EventHandler<AutomobileEventArgs> OnOpenDoors = (sender, value) => { };
 
         /// <summary>
@@ -231,6 +240,9 @@ namespace lab1
         /// <summary>
         /// Событие заправки автомобиля
         /// </summary>
+        [JsonIgnore]
+        [XmlIgnore]
+        [SoapIgnore]
         public EventHandler<AutomobileEventArgs> OnRefuel = (sender, value) => { };
 
         /// <summary>
@@ -246,14 +258,16 @@ namespace lab1
     /// <summary>
     /// Класс легокового автомобиля
     /// </summary>
-    class Car : Automobile
+    [Serializable]
+    public class Car : Automobile
     {
+        public Car() : base(){ }
         /// <summary>
         /// /Конструктор легокового автомобиля. Принимает на вход параметры: sizeOfFuelTank и carsName
         /// </summary>
         /// <param name="sizeOfFuelTank">Размер топливного бака</param>
         /// <param name="carsName">Имя или название автомобиля</param>
-        public Car(ushort sizeOfFuelTank, string carsName) : base(sizeOfFuelTank, carsName)
+        public Car(ushort sizeOfFuelTank, string carsName,bool Moving, Fuel FuelOfThisCar) : base(sizeOfFuelTank, carsName,Moving, FuelOfThisCar)
         {
             FuelOfThisCar = new Petrol_98(50);
             FuelOfThisCar.FuelLeft = sizeOfFuelTank;
@@ -261,6 +275,9 @@ namespace lab1
         /// <summary>
         /// Событие открытия багажника легкового автомобиля
         /// </summary>
+        [JsonIgnore]
+        [XmlIgnore]
+        [SoapIgnore]
         public EventHandler<AutomobileEventArgs> OnOpenBoot = (sender, value) => { };
 
         /// <summary>
@@ -276,14 +293,16 @@ namespace lab1
     /// <summary>
     /// Класс внедорожника
     /// </summary>
-    class OffRoader : Car
+    [Serializable]
+    public class OffRoader : Car
     {
+        public OffRoader() { }
         /// <summary>
         /// /Конструктор внедорожника. Принимает на вход параметры: sizeOfFuelTank и carsName
         /// </summary>
         /// <param name="sizeOfFuelTank">Размер топливного бака</param>
         /// <param name="carsName">Имя или название автомобиля</param>
-        public OffRoader(ushort sizeOfFuelTank, string carsName) : base(sizeOfFuelTank, carsName)
+        public OffRoader(ushort sizeOfFuelTank, string carsName, bool Moving, Fuel FuelOfThisCar) : base(sizeOfFuelTank, carsName,Moving, FuelOfThisCar)
         { }
         //public EventHandler<AutomobileEventArgs> OnMove = (sender, value) => { };
         /// <summary>
@@ -303,14 +322,15 @@ namespace lab1
     /// <summary>
     /// Класс спортивной машины
     /// </summary>
-    class SportsCar : Car
+    [Serializable]
+    public class SportsCar : Car
     {
         /// <summary>
         /// /Конструктор спортивного автомобиля. Принимает на вход параметры: sizeOfFuelTank и carsName
         /// </summary>
         /// <param name="sizeOfFuelTank">Размер топливного бака</param>
         /// <param name="carsName">Имя или название автомобиля</param>
-        public SportsCar(ushort sizeOfFuelTank, string carsName) : base(sizeOfFuelTank,  carsName)
+        public SportsCar(ushort sizeOfFuelTank, string carsName, bool Moving, Fuel FuelOfThisCar) : base(sizeOfFuelTank,  carsName, Moving, FuelOfThisCar)
         { }
         /// <summary>
         /// Метод движения спортивного автомобиля
@@ -328,14 +348,15 @@ namespace lab1
     /// <summary>
     /// Класс грузовика
     /// </summary>
-    class Truck : Automobile
+    [Serializable]
+    public class Truck : Automobile
     {
         /// <summary>
         /// /Конструктор грузовика. Принимает на вход параметры: sizeOfFuelTank и carsName
         /// </summary>
         /// <param name="sizeOfFuelTank">Размер топливного бака</param>
         /// <param name="carsName">Имя или название автомобиля</param>
-        public Truck(ushort sizeOfFuelTank, string carsName) : base(sizeOfFuelTank, carsName)
+        public Truck(ushort sizeOfFuelTank, string carsName, bool Moving, Fuel FuelOfThisCar) : base(sizeOfFuelTank, carsName, Moving, FuelOfThisCar)
         {
             FuelOfThisCar = new Petrol_95(50);
             FuelOfThisCar.FuelLeft = sizeOfFuelTank;
@@ -343,6 +364,9 @@ namespace lab1
         /// <summary>
         /// Событие загрузки грузовика
         /// </summary>
+        [JsonIgnore]
+        [XmlIgnore]
+        [SoapIgnore]
         public EventHandler<AutomobileEventArgs> OnBeLoaded = (sender, value) => { };
 
         /// <summary>
@@ -356,6 +380,9 @@ namespace lab1
         /// <summary>
         /// Событие разгрузки грузовика
         /// </summary>
+        [JsonIgnore]
+        [XmlIgnore]
+        [SoapIgnore]
         public EventHandler<AutomobileEventArgs> OnUnload = (sender, value) => { };
 
         /// <summary>
@@ -371,7 +398,7 @@ namespace lab1
     /// Интерфейс тягача
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    interface ILorry<in T> where T : Trailer
+    public interface ILorry<in T> where T : Trailer
     {
         /// <summary>
         /// Прикрепить прицеп
@@ -382,14 +409,15 @@ namespace lab1
     /// <summary>
     /// Класс тягача (фуры) 
     /// </summary>
-    class Lorry<T> : Automobile,ILorry<T> where T : Trailer
+    [Serializable]
+    public class Lorry<T> : Automobile,ILorry<T> where T : Trailer
     {
         /// <summary>
         /// /Конструктор тягача. Принимает на вход параметры: sizeOfFuelTank и carsName
         /// </summary>
         /// <param name="sizeOfFuelTank">Размер топливного бака</param>
         /// <param name="carsName">Имя или название автомобиля</param>
-        public Lorry(ushort sizeOfFuelTank, string carsName) : base(sizeOfFuelTank, carsName)
+        public Lorry(ushort sizeOfFuelTank, string carsName, bool Moving, Fuel FuelOfThisCar) : base(sizeOfFuelTank, carsName, Moving, FuelOfThisCar)
         {
             FuelOfThisCar = new Petrol_98(50);
             FuelOfThisCar.FuelLeft = sizeOfFuelTank;
@@ -397,6 +425,9 @@ namespace lab1
         /// <summary>
         /// Событие прикрепления трейлера
         /// </summary>
+        [JsonIgnore]
+        [XmlIgnore]
+        [SoapIgnore]
         public EventHandler<AutomobileEventArgs> OnAttachTrailer = (sender, value) => { };
 
         /// <summary>
@@ -431,7 +462,8 @@ namespace lab1
     /// <summary>
     /// Класс заправочной станции
     /// </summary>
-    class FillingStation : IFillingStation<Car>
+    [Serializable]
+    public class FillingStation : IFillingStation<Car>
     {
         /// <summary>
         /// Набор автомобилей на заправке
@@ -458,6 +490,9 @@ namespace lab1
         /// <summary>
         /// Событие заправки автомобиля
         /// </summary>
+        [JsonIgnore]
+        [XmlIgnore]
+        [SoapIgnore]
         public EventHandler<AutomobileEventArgs> OnFillTheCar = (sender, value) => { };
 
         /// <summary>
@@ -469,14 +504,14 @@ namespace lab1
         {
             OnFillTheCar(this,new AutomobileEventArgs() { info = Info.OnFillTheCar });
             uint amount = car.SizeOfFuelTank - car.FuelOfThisCar.FuelLeft;
-            if (car.TypeOfFuel == 95)
+            if (car.FuelOfThisCar.Type == 95)
             {
                 if (p95.FuelLeft < amount)
                     throw new NegativeValueException("Car \"" + car.Name + "\" cant be filled beacause htere is not enough fuel.");
                 p95.FuelLeft -= amount;
                 car.refuel();
             }
-            if (car.TypeOfFuel == 98)
+            if (car.FuelOfThisCar.Type == 98)
             {
                 if (p98.FuelLeft < amount)
                     throw new NegativeValueException("Car \"" + car.Name + "\" cant be filled beacause htere is not enough fuel.");
@@ -488,6 +523,9 @@ namespace lab1
         /// <summary>
         /// Событие одалживания автомобиля
         /// </summary>
+        [JsonIgnore]
+        [XmlIgnore]
+        [SoapIgnore]
         public EventHandler<AutomobileEventArgs> OnRemoveTheCar = (sender, value) => { };
 
         /// <summary>
@@ -497,7 +535,7 @@ namespace lab1
         public Car RemoveCar()
         {
             OnRemoveTheCar(this, new AutomobileEventArgs() { info = Info.OnRemoveTheCar });
-            return new Car(50,"Hired car");
+            return new Car(50,"Hired car",false,new Petrol_98(50));
         }
     }
     /// <summary>
@@ -521,7 +559,8 @@ namespace lab1
     /// <summary>
     /// Класс трейлера
     /// </summary>
-    class Trailer : ITrailer
+    [Serializable]
+    public class Trailer : ITrailer
     {
         /// <summary>
         /// Поле, принимающее значение True, если прицеплен, иначе false
@@ -542,6 +581,9 @@ namespace lab1
         /// <summary>
         /// Событие прикрепления прицепа к фуре
         /// </summary>
+        [JsonIgnore]
+        [XmlIgnore]
+        [SoapIgnore]
         public EventHandler<AutomobileEventArgs> OnBeAttached = (sender, value) => { };
 
         /// <summary>
@@ -557,6 +599,7 @@ namespace lab1
     /// <summary>
     /// Класс большого трейлера
     /// </summary>
+    [Serializable]
     class BigTrailer : Trailer
     {
         /// <summary>
@@ -567,7 +610,7 @@ namespace lab1
     /// <summary>
     /// Интерфейс топлива
     /// </summary>
-    public interface Fuel
+    public interface IFuel
     {
         /// <summary>
         /// //Тип топлива (95-ый или 98-ой)
@@ -586,9 +629,10 @@ namespace lab1
         }
     }
     /// <summary>
-    /// Класс бензина 95
+    /// Класс топлива
     /// </summary>
-    class Petrol_95 : Fuel
+    [Serializable]
+    public class Fuel : IFuel
     {
         /// <summary>
         /// Количество оставшегося топлива
@@ -605,59 +649,61 @@ namespace lab1
         /// <summary>
         /// //Тип топлива (95-ый или 98-ой)
         /// </summary>
-        private const ushort _Type = 95;
+        private ushort _Type;
         /// <summary>
         /// //Тип топлива (95-ый или 98-ой)
         /// </summary>
         public ushort Type
         {
+            set { _Type = value; }
             get { return _Type; }
         }
+        /// <summary>
+        /// Конструктор класса топливо
+        /// </summary>
+        /// <param name="amount">Количество топлива</param>
+        /// <param name="Type">Тип топлива</param>
+        public Fuel(uint amount,ushort Type)
+        {
+            fuelLeft = amount;
+            this.Type = Type;
+        }
+
+        public Fuel()
+        { }
+    }
+    /// <summary>
+    /// Класс бензина 95
+    /// </summary>
+    [Serializable]
+    public class Petrol_95 : Fuel
+    {
+        public Petrol_95() { }
+        
         /// <summary>
         /// Конструктор класса 98-ой бензин
         /// </summary>
         /// <param name="amount">Количество бензина</param>
-        public Petrol_95(uint amount)
+        public Petrol_95(uint amount) : base(amount,95)
         {
-            fuelLeft = amount;
         }
     }
     /// <summary>
     /// Класс бензина 98
     /// </summary>
-    class Petrol_98 : Fuel
+    [Serializable]
+    public class Petrol_98 : Fuel
     {
-        /// <summary>
-        /// Количество оставшегося топлива
-        /// </summary>
-        private uint fuelLeft;
-        /// <summary>
-        /// Количество оставшегося топлива
-        /// </summary>
-        public uint FuelLeft
-        {
-            set { fuelLeft = value; }
-            get { return fuelLeft; }
-        }
-        /// <summary>
-        /// //Тип топлива (95-ый или 98-ой)
-        /// </summary>
-        private const ushort _Type = 98;
-        /// <summary>
-        /// //Тип топлива (95-ый или 98-ой)
-        /// </summary>
-        public ushort Type
-        {
-            get { return _Type; }
-        }
+        
+        
         /// <summary>
         /// Конструктор класса 98-ой бензин
         /// </summary>
         /// <param name="amount">Количество бензина</param>
-        public Petrol_98(uint amount)
+        public Petrol_98(uint amount) : base(amount,98)
         {
-            fuelLeft = amount;
         }
+        public Petrol_98() { }
     }
 
     //
@@ -669,52 +715,65 @@ namespace lab1
             try
             {
                 Logger logg = new Logger("games \\log.log");
-                //SportsCar car = new SportsCar(4,"FastCar");
-                //Automobile aut = new Automobile(50,"Auto");
-
                 logg.OnLog += Helper.WriteLog;
                 Car car = Helper.CarFromConfig();
                 logg.SubscribeOnEventsAuto(car);
                 car.move();
-                car.move();
                 car.OpenDoors();
-                Car slowCar = new Car(50, "SlowCar");
+                Car slowCar = new Car(50, "SlowCar", false, new Petrol_98(50));
                 IFillingStation<Car> Fill = new FillingStation(200, 200);
                 logg.SubscribeOnEventsFillingStation((FillingStation)Fill);
                 Fill.fillTheCar(car);
                 MyCollection<Car> col = new MyCollection<Car>(Helper.sort);
-                //col.Add(new Car(200, "car1"));
-                // col.Add(new Car(190, "car2"));
-                //col.Add(new Car(180, "car3"));
-                // col.Add(new Car(170, "car4"));
-                // col.Add(new Car(140, "car5"));
+                col.Add(new Car(50, "car1", false, new Petrol_98(50)));
+                col.Add(new Car(50, "car2", false, new Petrol_98(50)));
                 Random rand = new Random();
-                for (int i = 0; i < 1000; i++)
-                {
-                    col.Add(new Car((ushort)rand.Next(50000), "Car" + i));
-                }
-               // foreach (Car i in col)
-               // {
-               //     Console.WriteLine(i.Name);
-               // }
+                // for (int i = 0; i < 1000; i++)
+                // {
+                //     col.Add(new Car((ushort)rand.Next(50000), "Car" + i));
+                // }
+                // foreach (Car i in col)
+                // {
+                //     Console.WriteLine(i.Name);
+                // }
                 Console.WriteLine("///////////////////");
-                
-                sorting(col);
+
+                // sorting(col);
+                //col.Sort();
                 //})
                 //{ IsBackground = true }.Start();
                 //foreach (Car i in col)
                 //{
                 //Console.WriteLine(i.Name);
                 // }
-                car.move();
-                car.move();
+                Console.WriteLine(col.Count);
+                Console.Read();
+                JSONSerializer<Car> s = new JSONSerializer<Car>();
+                s.serialize(col,"c:/универ/myJson.txt");
+                //MyCollection<int> col = new MyCollection<int>();
+                //col.Add(6);
+                 col = s.deSerialize("c:/универ/myJson.txt");
+                //BinarySerializer<Car> b = new BinarySerializer<Car>();
+               // b.serialize(col,"c:/универ/myBinary.txt");
+                //col = b.deSerialize("c:/универ/myBinary.txt");
+                XMLSerializer<Car> x = new XMLSerializer<Car>();
+                //x.serialize(col, "c:/универ/myXML.txt");
+                //col = x.deSerialize("c:/универ/myXML.txt");
+                MyCollection<Car> coll = s.deSerialize("c:/универ/myJSON.txt");
+                foreach (Car i in coll)
+                {
+                    Console.WriteLine(i.Name);
+                }
             }
             catch (MyException e)
             { excLog.HandleCustomException(e); }
             catch (Exception e)
-            { excLog.HandleSystemException(e); }
+            {
+                Console.WriteLine(e.Message);
+            }
             finally
             {
+                Console.Read();
                 Console.Read();
             }
         }
@@ -724,11 +783,11 @@ namespace lab1
         /// <param name="col">Коллекция, которую надо отсортировать</param>
         public static async void sorting(MyCollection<Car> col)
         {
-            new Thread(async () =>
-            {
+           // new Thread(async () =>
+            //{
                 await col.Sort();
-            })
-            { IsBackground = true }.Start();
+            //})
+            //{ IsBackground = true }.Start();
         }
     }
 

@@ -9,7 +9,7 @@ namespace lab1
     /// <summary>
     /// Класс аргументов
     /// </summary>
-    class AutomobileEventArgs : EventArgs
+    public class AutomobileEventArgs : EventArgs
     {
         /// <summary>
         /// Информация о типе события
