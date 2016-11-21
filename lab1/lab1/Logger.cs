@@ -23,16 +23,16 @@ namespace lab1
     /// <summary>
     /// Класс логгирования
     /// </summary>
-    class Logger
+    public class Logger
     {
         /// <summary>
         /// Файл, в который выводятся логи
         /// </summary>
         protected String Path;
         /// <summary>
-        /// Семафор
+        /// Мьютекс
         /// </summary>
-        private Object mutex;
+        public static Object mutex;
         /// <summary>
         /// Тип вывода: в консоль или в файл
         /// </summary> 
@@ -44,21 +44,27 @@ namespace lab1
         public Logger(String path) {
             mutex = new object();
             Path = path;
-            if (String.IsNullOrEmpty(path))
-            { 
+            
+        }
+
+        public TextWriter getOutput()
+        {
+            if (String.IsNullOrEmpty(Path))
+            {
                 Output = Console.Out;
             }
             else
             {
                 try
                 {
-                    Output = new StreamWriter(path);
+                    Output = new StreamWriter(Path, true);
                 }
-                catch(DirectoryNotFoundException e)
+                catch (DirectoryNotFoundException e)
                 {
                     Output = Console.Out;
                 }
             }
+            return Output;
         }
         /// <summary>
         /// Событие, объединяющее все остальные события программы
@@ -75,7 +81,7 @@ namespace lab1
                 {
                     lock (mutex)
                     {
-                        OnLog(sender, new LogArgs() { info = Info.OnMove,name = auto.Name,output = Output});
+                        OnLog(sender, new LogArgs() { info = Info.OnMove,name = auto.Name,output = getOutput()});
                     }
                 }){ IsBackground = true }.Start();
             };
@@ -84,7 +90,7 @@ namespace lab1
                 {
                     lock (mutex)
                     {
-                        OnLog(sender, new LogArgs() { info = Info.OnStop, name = auto.Name, output = Output });
+                        OnLog(sender, new LogArgs() { info = Info.OnStop, name = auto.Name, output = getOutput() });
                     }
                 }){ IsBackground = true}.Start();
             };
@@ -93,7 +99,7 @@ namespace lab1
                 {
                     lock (mutex)
                     {
-                        OnLog(sender, new LogArgs() { info = Info.OnOvertake, name = auto.Name, output = Output });
+                        OnLog(sender, new LogArgs() { info = Info.OnOvertake, name = auto.Name, output = getOutput() });
                     }
                 }){ IsBackground = true}.Start();
             };
@@ -102,7 +108,7 @@ namespace lab1
                 {
                     lock (mutex)
                     {
-                        OnLog(sender, new LogArgs() { info = Info.OnOpenDoors, name = auto.Name, output = Output });
+                        OnLog(sender, new LogArgs() { info = Info.OnOpenDoors, name = auto.Name, output = getOutput() });
                     }
                 })
                 { IsBackground = true}.Start();
@@ -112,7 +118,7 @@ namespace lab1
                 {
                     lock (mutex)
                     {
-                        OnLog(sender, new LogArgs() { info = Info.OnRefuel, name = auto.Name, output = Output });
+                        OnLog(sender, new LogArgs() { info = Info.OnRefuel, name = auto.Name, output = getOutput() });
                     }
                 }){ IsBackground = true }.Start();
             };
@@ -128,7 +134,7 @@ namespace lab1
             {
                 lock (mutex)
                 {
-                    OnLog(sender, new LogArgs() { info = Info.OnOpenBoot, name = car.Name, output = Output });
+                    OnLog(sender, new LogArgs() { info = Info.OnOpenBoot, name = car.Name, output = getOutput() });
                 }
             })
             { IsBackground = true }.Start();
@@ -145,7 +151,7 @@ namespace lab1
             {
                 lock (mutex)
                 {
-                    OnLog(sender, new LogArgs() { info = Info.OnAttachTrailer, name = lorry.Name, output = Output });
+                    OnLog(sender, new LogArgs() { info = Info.OnAttachTrailer, name = lorry.Name, output = getOutput() });
                 }
             })
             { IsBackground = true }.Start();
@@ -162,7 +168,7 @@ namespace lab1
                 {
                     lock (mutex)
                     {
-                        OnLog(sender, new LogArgs() { info = Info.OnBeLoaded, name = tr.Name, output = Output });
+                        OnLog(sender, new LogArgs() { info = Info.OnBeLoaded, name = tr.Name, output = getOutput() });
                     }
                 }) { IsBackground = true}.Start();
             };
@@ -171,7 +177,7 @@ namespace lab1
             {
                 lock (mutex)
                 {
-                    OnLog(sender, new LogArgs() { info = Info.OnUnload, name = tr.Name, output = Output });
+                    OnLog(sender, new LogArgs() { info = Info.OnUnload, name = tr.Name, output = getOutput() });
                 }
             })
             { IsBackground = true }.Start();
@@ -188,7 +194,7 @@ namespace lab1
                 {
                     lock (mutex)
                     {
-                        OnLog(sender, new LogArgs() { info = Info.OnRemoveTheCar, name = "Filling station", output = Output });
+                        OnLog(sender, new LogArgs() { info = Info.OnRemoveTheCar, name = "Filling station", output = getOutput() });
                     }
                 })
                 { IsBackground = true }.Start();
@@ -198,7 +204,7 @@ namespace lab1
                 {
                     lock (mutex)
                     {
-                        OnLog(sender, new LogArgs() { info = Info.OnFillTheCar, name = "Filling station", output = Output });
+                        OnLog(sender, new LogArgs() { info = Info.OnFillTheCar, name = "Filling station", output = getOutput() });
                     }
                 })
                 { IsBackground = true }.Start();
@@ -215,7 +221,7 @@ namespace lab1
                 {
                     lock (mutex)
                     {
-                        OnLog(sender, new LogArgs() { info = Info.OnBeAttached, name = "Trailer", output = Output });
+                        OnLog(sender, new LogArgs() { info = Info.OnBeAttached, name = "Trailer", output = getOutput() });
                     }
                 })
                 { IsBackground = true }.Start();

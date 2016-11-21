@@ -10,7 +10,7 @@ namespace lab1.Serialization
     /// Класс для сериализации коллекции в JSON, и дисериализации
     /// </summary>
     /// <typeparam name="T">Тип элементов коллекции</typeparam>
-    class JSONSerializer<T> : ISerializer<T>
+    public class JSONSerializer<T> : ISerializer<T>
     {
         /// <summary>
         /// Поле, выполняющее сериализацию
@@ -22,7 +22,6 @@ namespace lab1.Serialization
         public JSONSerializer()
         {
             serializer = new JsonSerializer();
-            serializer.Converters.Add(new JavaScriptDateTimeConverter());
             serializer.NullValueHandling = NullValueHandling.Ignore;
             serializer.Formatting = Formatting.Indented;
         }

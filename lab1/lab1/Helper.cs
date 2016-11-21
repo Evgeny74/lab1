@@ -3,7 +3,7 @@ using System.IO;
 
 namespace lab1
 {
-    class Helper
+    public class Helper
     {
         /// <summary>
         /// Метод вывода логов
@@ -57,37 +57,8 @@ namespace lab1
             }
             args.output.WriteLine($"\"{args.name}\",{DateTime.Now}: {msg}");
             args.output.Flush();
-        }
-        /// <summary>
-        /// Метод сортировки коллекции автомобилей
-        /// </summary>
-        /// <param name="collection">Коллекция</param>
-        /// <param name="ascend">Порядок(убывание или возрастание): true, если возрастание, иначе false</param>
-        public static void sort(MyCollection<Automobile> collection, bool ascend)
-        {
-            int count = collection.Count;
-            for (int i = 1; i < count; i++)
-            {
-                for (int j = 1; j < count - i + 1; j++)
-                {
-                    if (ascend)
-                        if (collection[j - 1].FuelOfThisCar.FuelLeft > collection[j].FuelOfThisCar.FuelLeft)
-                        {
-                            Automobile car = collection[j];
-                            collection[j] = collection[j - 1];
-                            collection[j - 1] = car;
-
-                        }
-                        else { }
-                    else
-                        if (collection[j - 1].FuelOfThisCar.FuelLeft < collection[j].FuelOfThisCar.FuelLeft)
-                    {
-                        Automobile car = collection[j];
-                        collection[j] = collection[j - 1];
-                        collection[j - 1] = car;
-                    }
-                }
-            }
+            args.output.Close();
+            args.output.Dispose();
         }
         /// <summary>
         /// Метод сортировки коллекции легковых автомобилей
@@ -96,15 +67,14 @@ namespace lab1
         /// <param name="ascend">Порядок(убывание или возрастание): true, если возрастание, иначе false</param>
         public static void sort(MyCollection<Car> collection, bool ascend, Action<double> progress)
         {
-            Console.WriteLine("hello");
             int count = collection.Count;
-            progress(0);
+           // progress(0);
             for (int i = 1; i < count; i++)
             {
                 for (int j = 1; j < count - i + 1; j++)
                 {
                     if (ascend)
-                        if (collection[j - 1].FuelOfThisCar.FuelLeft > collection[j].FuelOfThisCar.FuelLeft)
+                        if (collection[j - 1].SizeOfFuelTank > collection[j].SizeOfFuelTank)
                         {
                             Car car = collection[j];
                             collection[j] = collection[j - 1];
@@ -113,16 +83,16 @@ namespace lab1
                         }
                         else { }
                     else
-                        if (collection[j - 1].FuelOfThisCar.FuelLeft < collection[j].FuelOfThisCar.FuelLeft)
+                        if (collection[j - 1].SizeOfFuelTank < collection[j].SizeOfFuelTank)
                     {
                         Car car = collection[j];
                         collection[j] = collection[j - 1];
                         collection[j - 1] = car;
                     }
                 }
-                progress((double) i / count);
+               // progress((double) i / count);
             }
-            progress(1);
+           // progress(1);
         }
 
         /// <summary>
@@ -163,7 +133,9 @@ namespace lab1
 
         public static void Progress(double progress)
         {
-            Console.WriteLine("Sorting, " + progress * 100 + "% complete.");
+            if (progress < 1 && progress > 0)
+                Console.SetCursorPosition(0,Console.CursorTop-1);
+            Console.WriteLine("%: " + (int)(progress * 100));
         }
     }
 

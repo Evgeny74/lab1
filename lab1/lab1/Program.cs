@@ -3,6 +3,9 @@ using System;
 using System.Runtime.Serialization.Formatters.Binary;
 using Newtonsoft.Json;
 using System.Xml.Serialization;
+using System.Threading;
+using System.Xml;
+using JetBrains.ReSharper.Psi.Xml.Impl.Tree;
 
 namespace lab1
 {
@@ -65,7 +68,12 @@ namespace lab1
     /// Абстрактный класс автомобиль 
     /// </summary>
     [Serializable]
-    public abstract class Automobile : ICar
+    [XmlInclude(typeof(Car))]
+    [XmlInclude(typeof(OffRoader))]
+    [XmlInclude(typeof(SportsCar))]
+    [XmlInclude(typeof(Truck))]
+    [XmlInclude(typeof(Lorry<Trailer>))]
+    public class Automobile : ICar
     {
         /// <summary>
         /// Поле, показывающее, двигается автомобиль или нет. True, если автомобиль движется, иначе false
@@ -115,7 +123,6 @@ namespace lab1
         /// <summary>
         /// Топливо автомобиля
         /// </summary>
-        [XmlIgnore]
         public Fuel FuelOfThisCar
         {
             get { return fuelOfThisCar; }
@@ -170,7 +177,7 @@ namespace lab1
         /// </summary>
         [JsonIgnore]
         [XmlIgnore]
-        [SoapIgnore]
+        [NonSerialized]
         public EventHandler<AutomobileEventArgs> OnMove = (sender, value) => { };
 
         /// <summary>
@@ -190,7 +197,7 @@ namespace lab1
         /// </summary>
         [JsonIgnore]
         [XmlIgnore]
-        [SoapIgnore]
+        [NonSerialized]
         public EventHandler<AutomobileEventArgs> OnStop = (sender, value) => { };
         /// <summary>
         /// Метод остановки автомобиля
@@ -209,7 +216,7 @@ namespace lab1
         /// </summary>
         [JsonIgnore]
         [XmlIgnore]
-        [SoapIgnore]
+        [NonSerialized]
         public EventHandler<AutomobileEventArgs> OnOvertake = (sender, value) => { };
 
         /// <summary>
@@ -226,7 +233,7 @@ namespace lab1
         /// </summary>
         [JsonIgnore]
         [XmlIgnore]
-        [SoapIgnore]
+        [NonSerialized]
         public EventHandler<AutomobileEventArgs> OnOpenDoors = (sender, value) => { };
 
         /// <summary>
@@ -242,7 +249,7 @@ namespace lab1
         /// </summary>
         [JsonIgnore]
         [XmlIgnore]
-        [SoapIgnore]
+        [NonSerialized]
         public EventHandler<AutomobileEventArgs> OnRefuel = (sender, value) => { };
 
         /// <summary>
@@ -277,13 +284,13 @@ namespace lab1
         /// </summary>
         [JsonIgnore]
         [XmlIgnore]
-        [SoapIgnore]
+        [NonSerialized]
         public EventHandler<AutomobileEventArgs> OnOpenBoot = (sender, value) => { };
 
         /// <summary>
         /// Метод открытия багажника
         /// </summary>
-        void OpenBoot()
+        public void OpenBoot()
         {
             Console.WriteLine("My boot is open.");
             OnOpenBoot(this, new AutomobileEventArgs() { info = Info.OnOpenBoot });
@@ -325,6 +332,8 @@ namespace lab1
     [Serializable]
     public class SportsCar : Car
     {
+
+        public SportsCar() { }
         /// <summary>
         /// /Конструктор спортивного автомобиля. Принимает на вход параметры: sizeOfFuelTank и carsName
         /// </summary>
@@ -351,6 +360,8 @@ namespace lab1
     [Serializable]
     public class Truck : Automobile
     {
+
+        public Truck() { }
         /// <summary>
         /// /Конструктор грузовика. Принимает на вход параметры: sizeOfFuelTank и carsName
         /// </summary>
@@ -366,7 +377,7 @@ namespace lab1
         /// </summary>
         [JsonIgnore]
         [XmlIgnore]
-        [SoapIgnore]
+        [NonSerialized]
         public EventHandler<AutomobileEventArgs> OnBeLoaded = (sender, value) => { };
 
         /// <summary>
@@ -382,7 +393,7 @@ namespace lab1
         /// </summary>
         [JsonIgnore]
         [XmlIgnore]
-        [SoapIgnore]
+        [NonSerialized]
         public EventHandler<AutomobileEventArgs> OnUnload = (sender, value) => { };
 
         /// <summary>
@@ -412,6 +423,8 @@ namespace lab1
     [Serializable]
     public class Lorry<T> : Automobile,ILorry<T> where T : Trailer
     {
+
+        public Lorry() { }
         /// <summary>
         /// /Конструктор тягача. Принимает на вход параметры: sizeOfFuelTank и carsName
         /// </summary>
@@ -427,7 +440,7 @@ namespace lab1
         /// </summary>
         [JsonIgnore]
         [XmlIgnore]
-        [SoapIgnore]
+        [NonSerialized]
         public EventHandler<AutomobileEventArgs> OnAttachTrailer = (sender, value) => { };
 
         /// <summary>
@@ -487,12 +500,17 @@ namespace lab1
             p95 = new Petrol_95(petrol95);
             p98 = new Petrol_98(petrol98);
         }
+
+        public uint getFuel98()
+        {
+            return p98.FuelLeft;
+        }
         /// <summary>
         /// Событие заправки автомобиля
         /// </summary>
         [JsonIgnore]
         [XmlIgnore]
-        [SoapIgnore]
+        [NonSerialized]
         public EventHandler<AutomobileEventArgs> OnFillTheCar = (sender, value) => { };
 
         /// <summary>
@@ -525,7 +543,7 @@ namespace lab1
         /// </summary>
         [JsonIgnore]
         [XmlIgnore]
-        [SoapIgnore]
+        [NonSerialized]
         public EventHandler<AutomobileEventArgs> OnRemoveTheCar = (sender, value) => { };
 
         /// <summary>
@@ -583,7 +601,6 @@ namespace lab1
         /// </summary>
         [JsonIgnore]
         [XmlIgnore]
-        [SoapIgnore]
         public EventHandler<AutomobileEventArgs> OnBeAttached = (sender, value) => { };
 
         /// <summary>
@@ -600,7 +617,7 @@ namespace lab1
     /// Класс большого трейлера
     /// </summary>
     [Serializable]
-    class BigTrailer : Trailer
+    public class BigTrailer : Trailer
     {
         /// <summary>
         /// Конструктор
@@ -632,6 +649,8 @@ namespace lab1
     /// Класс топлива
     /// </summary>
     [Serializable]
+    [XmlInclude(typeof(Petrol_95))]
+    [XmlInclude(typeof(Petrol_98))]
     public class Fuel : IFuel
     {
         /// <summary>
@@ -711,84 +730,65 @@ namespace lab1
     {
         static void Main(string[] args)
         {
-            ExceptionLogger excLog = new ExceptionLogger("");
+            /*ExceptionLogger excLog = new ExceptionLogger("");
             try
-            {
-                Logger logg = new Logger("games \\log.log");
-                logg.OnLog += Helper.WriteLog;
-                Car car = Helper.CarFromConfig();
-                logg.SubscribeOnEventsAuto(car);
-                car.move();
-                car.OpenDoors();
-                Car slowCar = new Car(50, "SlowCar", false, new Petrol_98(50));
-                IFillingStation<Car> Fill = new FillingStation(200, 200);
-                logg.SubscribeOnEventsFillingStation((FillingStation)Fill);
-                Fill.fillTheCar(car);
-                MyCollection<Car> col = new MyCollection<Car>(Helper.sort);
-                col.Add(new Car(50, "car1", false, new Petrol_98(50)));
-                col.Add(new Car(50, "car2", false, new Petrol_98(50)));
-                Random rand = new Random();
-                // for (int i = 0; i < 1000; i++)
-                // {
-                //     col.Add(new Car((ushort)rand.Next(50000), "Car" + i));
-                // }
-                // foreach (Car i in col)
-                // {
-                //     Console.WriteLine(i.Name);
-                // }
-                Console.WriteLine("///////////////////");
-
+            {*/
+                //logg.SubscribeOnEventsFillingStation((FillingStation)Fill);
+                //MyCollection<Automobile> col = new MyCollection<Automobile>();
+               // col.Add(new Automobile(50, "car1", false, new Fuel(50,98)));
+               // col.Add(new Automobile(50, "car2", false, new Fuel(50,98)));
+                //Console.WriteLine("///////////////////");
+                //new Thread (()
                 // sorting(col);
                 //col.Sort();
-                //})
-                //{ IsBackground = true }.Start();
-                //foreach (Car i in col)
-                //{
-                //Console.WriteLine(i.Name);
-                // }
-                Console.WriteLine(col.Count);
-                Console.Read();
-                JSONSerializer<Car> s = new JSONSerializer<Car>();
-                s.serialize(col,"c:/универ/myJson.txt");
-                //MyCollection<int> col = new MyCollection<int>();
-                //col.Add(6);
-                 col = s.deSerialize("c:/универ/myJson.txt");
+                // foreach (Car i in col)
+                //  {
+                //      Console.WriteLine(i.Name);
+                //  }
+                //Console.WriteLine(col.Count);
+               /* const string file = "c:/универ/logs.txt";
+                ExceptionLogger excLogger = new ExceptionLogger(file);
+                excLogger.HandleCustomException(new StringFormatException());
+                excLogger.HandleCustomException(new NotEnoughFuelException());
+                excLogger.HandleCustomException(new WrongLength());
+                excLogger.HandleCustomException(new NegativeValueException());
+                Console.Read();*/
+                //JSONSerializer<Car> s = new JSONSerializer<Car>();
+                //s.serialize(col,"c:/универ/myJson.txt");
+                //col = s.deSerialize("c:/универ/myJson.txt");
                 //BinarySerializer<Car> b = new BinarySerializer<Car>();
-               // b.serialize(col,"c:/универ/myBinary.txt");
-                //col = b.deSerialize("c:/универ/myBinary.txt");
-                XMLSerializer<Car> x = new XMLSerializer<Car>();
-                //x.serialize(col, "c:/универ/myXML.txt");
-                //col = x.deSerialize("c:/универ/myXML.txt");
-                MyCollection<Car> coll = s.deSerialize("c:/универ/myJSON.txt");
-                foreach (Car i in coll)
-                {
-                    Console.WriteLine(i.Name);
-                }
-            }
-            catch (MyException e)
-            { excLog.HandleCustomException(e); }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
-            finally
-            {
-                Console.Read();
-                Console.Read();
-            }
+                //b.serialize(col,"c:/универ/myBinary.txt");
+               // col = b.deSerialize("c:/универ/myBinary.txt");
+               // XMLSerializer<Automobile> x = new XMLSerializer<Automobile>();
+               // x.serialize(col, "c:/универ/myXML.txt");
+               // //col = x.deSerialize("c:/универ/myXML.txt");
+               // MyCollection<Automobile> coll = x.deSerialize("c:/универ/myXML.txt");
+               // foreach (Automobile i in coll)
+               // {
+               //     Console.WriteLine(coll.Count);
+               // }
+           // Console.Read();
+            //Console.Read();
+            /* }
+             catch (MyException e)
+             { excLog.HandleCustomException(e); }
+             catch (Exception e)
+             {
+                 Console.WriteLine(e.InnerException.Message);
+             }
+             finally
+             {
+                 Console.Read();
+                 Console.Read();
+             }*/
         }
         /// <summary>
         /// Асинхронная сортировка
         /// </summary>
         /// <param name="col">Коллекция, которую надо отсортировать</param>
-        public static async void sorting(MyCollection<Car> col)
-        {
-           // new Thread(async () =>
-            //{
-                await col.Sort();
-            //})
-            //{ IsBackground = true }.Start();
-        }
+        /*public static async void sorting(MyCollection<Car> col){
+            await col.Sort();
+        }*/
     }
 
 }

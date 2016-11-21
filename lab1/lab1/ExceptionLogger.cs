@@ -4,7 +4,7 @@ using System.Threading;
 
 namespace lab1
 {
-    class ExceptionLogger 
+    public class ExceptionLogger 
     {
         /// <summary>
         /// Файл, в который выводятся логи
@@ -18,26 +18,12 @@ namespace lab1
         /// Контсруктор
         /// </summary>
         /// <param name="path">Путь к файлу, куда пишутся логи</param>
-        private Object mutex;
+        public static Object mutex;
         public ExceptionLogger(String path)
         {
             mutex = new object();
             Path = path;
-            if (String.IsNullOrEmpty(path))
-            {
-                Output = Console.Out;
-            }
-            else
-            {
-                try
-                {
-                    Output = new StreamWriter(path);
-                }
-                catch (DirectoryNotFoundException e)
-                {
-                    Output = Console.Out;
-                }
-            }
+            
         }
         /// <summary>
         /// Обработка пользовательских исключений
@@ -49,8 +35,10 @@ namespace lab1
             {
                lock (mutex)
                {
-                   Output.WriteLine(DateTime.Now + ": Custom exception occured : " + e.Message);
-                   Output.Flush();
+                    using (var output = getOutput())
+                    {
+                        output.WriteLine(DateTime.Now + ": Custom exception occured : " + e.Message);
+                    }
                }
            })
             { IsBackground = true }.Start();
@@ -65,11 +53,32 @@ namespace lab1
             {
                 lock (mutex)
                 {
-                    Output.WriteLine(DateTime.Now + ": System exception : " + e.Message);
-                    Output.Flush();
+                    using (var output = getOutput()) { 
+                        output.WriteLine(DateTime.Now + ": System exception : " + e.Message);
+                    }
                 }
             })
             { IsBackground = true }.Start();
+        }
+
+        private TextWriter getOutput()
+        {
+            if (String.IsNullOrEmpty(Path))
+            {
+                Output = Console.Out;
+            }
+            else
+            {
+                try
+                {
+                    Output = new StreamWriter(Path,true);
+                }
+                catch (DirectoryNotFoundException e)
+                {
+                    Output = Console.Out;
+                }
+            }
+            return Output;
         }
     }
 }

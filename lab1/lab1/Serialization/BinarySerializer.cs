@@ -9,7 +9,7 @@ namespace lab1.Serialization
     /// Класс для сериализации коллекции в бинарный формат, и дисериализации
     /// </summary>
     /// <typeparam name="T">Тип элементов коллекции</typeparam>
-    class BinarySerializer<T> : ISerializer<T>
+    public class BinarySerializer<T> : ISerializer<T>
     {
         /// <summary>
         /// Поле, выполняющее сериализацию

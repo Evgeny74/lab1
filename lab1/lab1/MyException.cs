@@ -5,7 +5,7 @@ namespace lab1
     /// <summary>
     /// Пользовательское исключение
     /// </summary>
-    class MyException : Exception
+    public class MyException : Exception
     {
         /// <summary>
         /// Конструктор
@@ -24,7 +24,7 @@ namespace lab1
         public MyException(String message, Exception inner) : base(message,inner) { }
     }
 
-    class NotEnoughFuelException : MyException
+    public class NotEnoughFuelException : MyException
     {
         /// <summary>
         /// Конструктор
@@ -43,7 +43,7 @@ namespace lab1
         public NotEnoughFuelException(String message, Exception inner) : base(message,inner) { }
     }
 
-    class StringFormatException : MyException
+    public class StringFormatException : MyException
     {
         /// <summary>
         /// Конструктор
@@ -62,7 +62,7 @@ namespace lab1
         public StringFormatException(String message, Exception inner) : base(message,inner) { }
     }
 
-    class WrongLength : MyException
+    public class WrongLength : MyException
     {
         /// <summary>
         /// Конструктор
@@ -81,7 +81,7 @@ namespace lab1
         public WrongLength(String message, Exception inner) : base(message, inner) { }
     }
 
-    class NegativeValueException : MyException
+    public class NegativeValueException : MyException
     {
         /// <summary>
         /// Конструктор
