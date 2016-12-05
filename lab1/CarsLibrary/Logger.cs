@@ -2,7 +2,7 @@
 using System.IO;
 using System.Threading;
 
-namespace lab1
+namespace CarsLibrary
 {
     public enum Info
         {

@@ -5,14 +5,14 @@ using System.Xml.Linq;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 
-namespace lab1.Serialization
+namespace CarsLibrary.Serialization
 {
     
     /// <summary>
     /// Класс для сериализации коллекции в XML, и дисериализации
     /// </summary>
     /// <typeparam name="T">Тип элементов коллекции</typeparam>
-    public class XMLSerializer<T> : ISerializer<T>
+    public class XMLSerializer<T> : ISerializer<T> where T : Automobile
     {
         private bool validated = true;
         /// <summary>
@@ -37,16 +37,16 @@ namespace lab1.Serialization
             StreamWriter streamWriter = new StreamWriter(output);
             serializer.Serialize(streamWriter,collection);
             streamWriter.Close();
-            XmlSchemaInference infer = new XmlSchemaInference();
+            /*XmlSchemaInference infer = new XmlSchemaInference();
             XmlSchemaSet schemaSet =
               infer.InferSchema(new XmlTextReader(output));
-
+//
             XmlWriter w = XmlWriter.Create("someXSD.xsd");
             foreach (XmlSchema schema in schemaSet.Schemas())
             {
                 schema.Write(w);
             }
-            w.Close();
+            w.Close();*/
         }
         /// <summary>
         /// Метод десериализации из XML
@@ -62,11 +62,14 @@ namespace lab1.Serialization
             {
                 xDoc.Validate(schemaSet, ValidationCallBack);
                 StreamReader streamReader = new StreamReader(input);
-                MyCollection<T> col = (MyCollection<T>)serializer.Deserialize(streamReader);
+                MyCollection<T> col = (MyCollection<T>) serializer.Deserialize(streamReader);
                 if (validated)
                     return col;
             }
-            catch(XmlSchemaValidationException ex){}
+            catch (XmlSchemaValidationException ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
             validated = true;
             return new MyCollection<T>();
         }

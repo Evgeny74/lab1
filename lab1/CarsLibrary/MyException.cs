@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace lab1
+namespace CarsLibrary
 {
     /// <summary>
     /// Пользовательское исключение

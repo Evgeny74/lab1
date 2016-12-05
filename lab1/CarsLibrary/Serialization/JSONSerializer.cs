@@ -4,13 +4,13 @@ using Newtonsoft.Json.Converters;
 using System.IO;
 using System.Collections.Generic;
 
-namespace lab1.Serialization 
+namespace CarsLibrary.Serialization 
 {
     /// <summary>
     /// Класс для сериализации коллекции в JSON, и дисериализации
     /// </summary>
     /// <typeparam name="T">Тип элементов коллекции</typeparam>
-    public class JSONSerializer<T> : ISerializer<T>
+    public class JSONSerializer<T> : ISerializer<T> where T : Automobile
     {
         /// <summary>
         /// Поле, выполняющее сериализацию

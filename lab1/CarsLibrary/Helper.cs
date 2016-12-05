@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace lab1
+namespace CarsLibrary
 {
     public class Helper
     {
@@ -128,7 +128,7 @@ namespace lab1
             }
             catch (Exception e)
             { throw new NotEnoughFuelException("Too little fuel!",e); }
-            return new lab1.Car(fuel,name,false,new Petrol_98(fuel));
+            return new Car(fuel,name,false,new Petrol_98(fuel));
         }
 
         public static void Progress(double progress)

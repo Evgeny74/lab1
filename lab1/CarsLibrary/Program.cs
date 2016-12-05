@@ -1,13 +1,10 @@
-﻿using lab1.Serialization;
+﻿using CarsLibrary.Serialization;
 using System;
 using System.Runtime.Serialization.Formatters.Binary;
 using Newtonsoft.Json;
 using System.Xml.Serialization;
-using System.Threading;
-using System.Xml;
-using JetBrains.ReSharper.Psi.Xml.Impl.Tree;
 
-namespace lab1
+namespace CarsLibrary
 {
 
     /// <summary>
@@ -730,65 +727,7 @@ namespace lab1
     {
         static void Main(string[] args)
         {
-            /*ExceptionLogger excLog = new ExceptionLogger("");
-            try
-            {*/
-                //logg.SubscribeOnEventsFillingStation((FillingStation)Fill);
-                //MyCollection<Automobile> col = new MyCollection<Automobile>();
-               // col.Add(new Automobile(50, "car1", false, new Fuel(50,98)));
-               // col.Add(new Automobile(50, "car2", false, new Fuel(50,98)));
-                //Console.WriteLine("///////////////////");
-                //new Thread (()
-                // sorting(col);
-                //col.Sort();
-                // foreach (Car i in col)
-                //  {
-                //      Console.WriteLine(i.Name);
-                //  }
-                //Console.WriteLine(col.Count);
-               /* const string file = "c:/универ/logs.txt";
-                ExceptionLogger excLogger = new ExceptionLogger(file);
-                excLogger.HandleCustomException(new StringFormatException());
-                excLogger.HandleCustomException(new NotEnoughFuelException());
-                excLogger.HandleCustomException(new WrongLength());
-                excLogger.HandleCustomException(new NegativeValueException());
-                Console.Read();*/
-                //JSONSerializer<Car> s = new JSONSerializer<Car>();
-                //s.serialize(col,"c:/универ/myJson.txt");
-                //col = s.deSerialize("c:/универ/myJson.txt");
-                //BinarySerializer<Car> b = new BinarySerializer<Car>();
-                //b.serialize(col,"c:/универ/myBinary.txt");
-               // col = b.deSerialize("c:/универ/myBinary.txt");
-               // XMLSerializer<Automobile> x = new XMLSerializer<Automobile>();
-               // x.serialize(col, "c:/универ/myXML.txt");
-               // //col = x.deSerialize("c:/универ/myXML.txt");
-               // MyCollection<Automobile> coll = x.deSerialize("c:/универ/myXML.txt");
-               // foreach (Automobile i in coll)
-               // {
-               //     Console.WriteLine(coll.Count);
-               // }
-           // Console.Read();
-            //Console.Read();
-            /* }
-             catch (MyException e)
-             { excLog.HandleCustomException(e); }
-             catch (Exception e)
-             {
-                 Console.WriteLine(e.InnerException.Message);
-             }
-             finally
-             {
-                 Console.Read();
-                 Console.Read();
-             }*/
         }
-        /// <summary>
-        /// Асинхронная сортировка
-        /// </summary>
-        /// <param name="col">Коллекция, которую надо отсортировать</param>
-        /*public static async void sorting(MyCollection<Car> col){
-            await col.Sort();
-        }*/
     }
 
 }

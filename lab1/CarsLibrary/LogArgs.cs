@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace lab1
+namespace CarsLibrary
 {
     public class LogArgs : EventArgs
     {

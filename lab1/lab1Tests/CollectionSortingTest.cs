@@ -1,5 +1,5 @@
 ﻿using Xunit;
-using lab1;
+using CarsLibrary;
 using System;
 
 namespace lab1Tests

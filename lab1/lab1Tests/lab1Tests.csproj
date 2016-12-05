@@ -74,9 +74,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\lab1\lab1.csproj">
+    <ProjectReference Include="..\lab1\CarsLibrary.csproj">
       <Project>{4EA55ED5-F576-4286-99F8-459FE9DB9E8E}</Project>
-      <Name>lab1</Name>
+      <Name>CarsLibrary</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

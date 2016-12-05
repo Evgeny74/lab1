@@ -1,7 +1,7 @@
 ﻿using System;
 using Xunit;
-using lab1;
-using lab1.Serialization;
+using CarsLibrary;
+using CarsLibrary.Serialization;
 
 namespace lab1Tests
 {

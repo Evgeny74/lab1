@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Xunit;
-using lab1;
+using CarsLibrary;
 
 namespace lab1Tests
 {

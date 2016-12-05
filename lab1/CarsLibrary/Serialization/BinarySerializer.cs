@@ -3,13 +3,13 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
 
-namespace lab1.Serialization
+namespace CarsLibrary.Serialization
 {
     /// <summary>
     /// Класс для сериализации коллекции в бинарный формат, и дисериализации
     /// </summary>
     /// <typeparam name="T">Тип элементов коллекции</typeparam>
-    public class BinarySerializer<T> : ISerializer<T>
+    public class BinarySerializer<T> : ISerializer<T> where T : Automobile
     {
         /// <summary>
         /// Поле, выполняющее сериализацию

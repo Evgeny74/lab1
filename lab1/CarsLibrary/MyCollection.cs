@@ -5,14 +5,14 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Xml.Serialization;
 
-namespace lab1
+namespace CarsLibrary
 {
     /// <summary>
     /// Реализация коллекции на основе класса List
     /// </summary>
     /// <typeparam name="T">Тип параметра</typeparam>
     [Serializable]
-    public class MyCollection<T> : ICollection<T>, ICloneable, IEnumerator<T>
+    public class MyCollection<T> : ICollection<T>, ICloneable, IEnumerator<T> where T : Automobile
     {
         /// <summary>
         /// Основной список коллекции
